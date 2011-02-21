@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TraceArtifacts
+Bundle-SymbolicName: uk.ulancs.diva.TraceArtifacts;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: uk.ulancs.diva.traceartifacts.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ diva.model;bundle-version="1.0.2",
+ diva.model.editor;bundle-version="1.0.2",
+ ca.uwaterloo.gp.fmp;bundle-version="0.7.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
