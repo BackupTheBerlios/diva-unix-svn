@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="uk.ulancs.diva.FeatureTreeNormaliser.contribution1"
+            nameFilter="*.fmp"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               label="ArborCraft"
+               path="additions"
+               id="ArborCraftPlugin.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="Normalise Feature Tree"
+               class="uk.ulancs.diva.FeatureTreeNormaliser.popup.actions.NormaliserAction"
+               menubarPath="ArborCraftPlugin.menu1/group1"
+               enablesFor="1"
+               id="uk.ulancs.diva.FeatureTreeNormaliser.newAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
