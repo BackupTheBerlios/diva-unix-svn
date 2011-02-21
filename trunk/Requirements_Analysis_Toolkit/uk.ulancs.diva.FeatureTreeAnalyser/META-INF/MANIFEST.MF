@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FeatureTreeAnalyzer
+Bundle-SymbolicName: uk.ulancs.diva.FeatureTreeAnalyzer; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: uk.ulancs.diva.FeatureTreeAnalyzer.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ ca.uwaterloo.gp.fmp;bundle-version="0.7.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: lib/jgraphlayout.jar,
+ lib/jlapack.jar,
+ lib/swing-layout-1.0.jar,
+ .
