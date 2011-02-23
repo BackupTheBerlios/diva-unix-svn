@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="uk.ulancs.diva.DiVAModelCompare.contribution1"
+            nameFilter="*.diva"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               label="ArborCraft"
+               path="additions"
+               id="ArborCraftExtension.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="DiVA Model Compare"
+               class="uk.ulancs.diva.DiVAModelCompare.popup.actions.AnalyzerAction"
+               menubarPath="ArborCraftExtension.menu1/group1"
+               enablesFor="2"
+               id="uk.ulancs.diva.DiVAModelCompare.newAction">
+         </action>
+         <action
+               class="uk.ulancs.diva.DiVAModelCompare.popup.actions.ApplySimulations"
+               enablesFor="1"
+               id="uk.ulancs.diva.DiVAModelCompare.applySimulations"
+               label="Apply Simulations"
+               menubarPath="ArborCraftExtension.menu1/group1">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <file-association
+            content-type="org.eclipse.emf.compare.ui.contenttype.ModelContentType"
+            file-extensions="diva"
+            file-names="*">
+      </file-association>
+   </extension>
+
+</plugin>

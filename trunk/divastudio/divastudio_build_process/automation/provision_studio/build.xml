@@ -1,0 +1,303 @@
+<project name="build_divastudio" default="all">
+
+	<property name="env.WORKSPACE" location="../../.."/>
+	<!-- Change this according to the computer running the script -->
+	<property name="eclipse.native.version.name" value="linux_x86_64"/>
+	
+	<!-- <property name="eclipse.version.name" value="linux_x86_64"/> -->
+	<!-- <property name="eclipse.base.dir" location="${env.WORKSPACE}/eclipse_${eclipse.version.name}_base"/> -->
+	<!-- <property name="target.eclipse.dir" location="${env.WORKSPACE}/build/divastudio_${eclipse.version.name}_base"/> -->
+	<!-- <property name="target.eclipse.zip" location="${env.WORKSPACE}/build/divastudio_${eclipse.version.name}_base.zip"/> -->
+	<!-- <property name="eclipse.home" location="${eclipse.base.dir}/eclipse"/> -->
+	<property name="equinox.jar.filename" value="org.eclipse.equinox.launcher_1.1.0.v20100507.jar"/>
+	<property name="eclipse.workspace.dir" location="${env.WORKSPACE}/eclipseworkspace"/>	
+	<property name="eclipse.build.dir" location="${env.WORKSPACE}/src"/>
+	<!-- <property name="eclipse.official.repository" value="http://eclipse.ialto.org/releases/helios"/> -->
+	<property name="eclipse.bin.home" location="${env.WORKSPACE}/build/divastudio_helios_${eclipse.native.version.name}_base/eclipse"/>		
+	<property name="updatesite.repository" location="${env.WORKSPACE}/build/updatesite"/>		
+	<property name="category.definition" location="./category.xml"/>
+	<property name="eclipse.official.repository.local.mirror" location="${env.WORKSPACE}/eclipse_repository_mirror"/>
+	<property name="source.features.and.bundles" location="${env.WORKSPACE}/build/features_and_bundles"/>			
+	<property name="source.features.and.bundles.zip" value="${env.WORKSPACE}/I.TestBuild/eu.ict_diva.studio.main.feature-TestBuild.zip"/>		
+		
+		
+	<target name="all" depends="">
+		<antcall target="publish_categories"/>
+	    <antcall target="provision_win32_divastudio"/>
+		<antcall target="provision_linux_x86_64_divastudio"/>
+	    <antcall target="provision_win32_x86_64_divastudio"/>
+	    <antcall target="provision_macosx-cocoa_x86_64_divastudio"/>
+	    <antcall target="provision_macosx-cocoa_divastudio"/>
+	    <antcall target="provision_linux_x86_divastudio"/>
+		<antcall target="deploy_divastudio"/>
+	</target>
+
+
+	<target name="provision_linux_x86_64_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="linux_x86_64"/>
+			<param name="archive.extension" value="tar.gz"/>
+			<param name="target.os" value="linux"/>
+			<param name="target.ws" value="gtk"/>
+			<param name="target.arch" value="x86_64"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+	<target name="provision_linux_x86_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="linux_x86"/>
+			<param name="archive.extension" value="tar.gz"/>
+			<param name="target.os" value="linux"/>
+			<param name="target.ws" value="gtk"/>
+			<param name="target.arch" value="x86"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+
+	<target name="provision_win32_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="win32"/>
+			<param name="archive.extension" value="zip"/>
+			<param name="target.os" value="win32"/>
+			<param name="target.ws" value="win32"/>
+			<param name="target.arch" value="x86"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+	
+	<target name="provision_win32_x86_64_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="win32_x86_64"/>
+			<param name="archive.extension" value="zip"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.5.2-201002111343/eclipse-platform-3.5.2-win32-x86_64.zip"/>
+			<param name="target.os" value="win32"/>
+			<param name="target.ws" value="win32"/>
+			<param name="target.arch" value="x86_64"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+	
+	<target name="provision_macosx-cocoa_x86_64_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="macosx-cocoa_x86_64"/>
+			<param name="archive.extension" value="tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.5.2-201002111343/eclipse-platform-3.5.2-macosx-cocoa-x86_64.tar.gz"/>
+			<param name="target.os" value="macosx"/>
+			<param name="target.ws" value="cocoa"/>
+			<param name="target.arch" value="x86_64"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+	<target name="provision_macosx-cocoa_divastudio">
+		<antcall target="provision_eclipse_version">
+			<param name="eclipse.version.name" value="macosx-cocoa"/>
+			<param name="archive.extension" value="tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.5.2-201002111343/eclipse-platform-3.5.2-macosx-cocoa.tar.gz"/>
+			<param name="target.os" value="macosx"/>
+			<param name="target.ws" value="cocoa"/>
+			<param name="target.arch" value="x86"/>
+			<param name="target.profile" value="SDKProfile"/>
+		</antcall>
+	</target>
+
+	
+
+	
+	
+	
+	<target name="provision_eclipse_version" >
+		<echo>Provision ${eclipse.version.name}</echo>
+		
+
+		<mkdir dir="${eclipse.workspace.dir}"/>
+		<antcall target="create_target_base">
+			<param name="eclipse.base.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}_base"/>
+			<param name="target.eclipse.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}"/>
+		</antcall>
+		
+		<antcall target="provision_feature">
+    		<param name="feature.name" value="eu.ict_diva.studio.main.feature.feature.group"/>
+			<param name="feature.repository" value="file:/${updatesite.repository}"/>
+			<param name="target.eclipse.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}"/>
+  		</antcall>
+
+
+		<echo>customize splashscreen with ${env.WORKSPACE}/divastudio_build_process/automation/provision_studio/branding/splash.bmp</echo>
+		<copy todir="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/plugins/org.eclipse.platform_3.6.1.v201009090800/" 
+					file="${env.WORKSPACE}/divastudio_build_process/automation/provision_studio/branding/splash.bmp"
+			overwrite="true"/>
+		<echo>customize eclipse.ini</echo>
+		<replaceregexp file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/eclipse.ini"
+						               match="^256m$"
+						               replace="512m"
+						               byline="true"
+						/>
+		<!--<replaceregexp file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/eclipse.ini"
+								               match="^org.eclipse.platform$"
+								               replace="eu.ict_diva.studio"
+								               byline="true"
+								/>
+								-->
+		
+		<replaceregexp file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/eclipse.ini"
+								               match="256m"
+								               replace="512m"
+								               byline="true"
+								/>
+		<replaceregexp file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/eclipse.ini"
+		               match="-Xms(.*)"
+		               replace="-Xms128m"
+		               byline="true"
+		/>
+		<replaceregexp file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}/eclipse/eclipse.ini"
+				               match="-Xmx(.*)"
+				               replace="-Xmx1024m"
+				               byline="true"
+				/>
+		<echo>Zipping the resulting package</echo>
+		<antcall target="compress.${archive.extension}"/>
+		
+	</target>
+	<target name="compress.tar.gz">
+		<delete file="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}.tar.gz" failonerror="false"/>
+		<tar destfile="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}.tar.gz" 
+			compression="gzip"
+			longfile="gnu">
+			<fileset dir="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}">
+			</fileset>
+		</tar>
+	</target>
+	<target name="compress.zip">
+		<zip destfile="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}.zip">
+			<fileset dir="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}"></fileset>
+		</zip>
+	</target>
+	
+	<target name="provision_feature" >
+		<echo>Provisionning ${eclipse.version.name} with ${feature.name}</echo>
+		<echo>target.eclipse.dir=${target.eclipse.dir}; OS=${target.os}; arch=${target.arch}; ws=${target.ws}; target.profile=${target.profile}</echo>
+		<java jar="${env.WORKSPACE}/build/divastudio_helios_${eclipse.native.version.name}_base/eclipse/plugins/${equinox.jar.filename}"
+		           fork="true"
+		           failonerror="true"
+		           maxmemory="128m"
+		           >
+			<arg value="-application"/>
+							<arg value="org.eclipse.equinox.p2.director"/>
+						<arg value="-metadataRepository"/>
+							<arg value="${feature.repository}"/>
+						<arg value="-artifactRepository"/>
+							<arg value="${feature.repository}"/>
+						<arg value="-installIU"/>
+							<arg value="${feature.name}"/>
+						<arg value="-destination"/>
+							<arg value="${target.eclipse.dir}/eclipse"/>
+						<arg value="-bundlepool"/>
+							<arg value="${target.eclipse.dir}/eclipse"/>
+						<arg value="-profileProperties"/>
+							<arg value="org.eclipse.update.install.features=true"/>
+						<arg value="-profile"/>
+							<arg value="${target.profile}"/> 
+						<arg value="-p2.os"/> 
+							<arg value="${target.os}"/> 
+						<arg value="-p2.ws"/> 
+							<arg value="${target.ws}"/> 
+						<arg value="-p2.arch"/> 
+							<arg value="${target.arch}"/>
+						<arg value="-shared"/>
+							<arg value="${target.eclipse.dir}/eclipse/p2"/>
+						<jvmarg value="-Declipse.p2.MD5Check=false"/>
+		</java>	
+	</target>
+	
+	<!-- create an empty base from the downloaded one -->
+	<target name="create_target_base">
+		<delete dir="${target.eclipse.dir}" failonerror="false"/>	
+		<copy todir="${target.eclipse.dir}">
+			<fileset dir="${eclipse.base.dir}" includes="**" >
+				<exclude name="*.tstamp"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="publish_features_and_bundles" depends="get_repository_source">
+		<delete dir="${updatesite.repository}" failonerror="false"/>
+		<java jar="${eclipse.bin.home}/plugins/${equinox.jar.filename}"
+				           fork="true"
+				           failonerror="true"
+				           maxmemory="128m"
+				           >
+					<arg value="-application"/>
+					<arg value="org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher"/>
+					<arg value="-metadataRepository"/>
+					<arg value="file:/${updatesite.repository}"/>
+					<arg value="-artifactRepository"/>
+					<arg value="file:/${updatesite.repository}"/>
+					<arg value="-source"/>
+					<arg value="${source.features.and.bundles}/eclipse"/>
+					<arg value="-compress"/>
+					<arg value="-publishArtifacts"/>
+				</java>	
+	</target>
+	<target name="publish_categories" depends="publish_features_and_bundles">
+			<java jar="${eclipse.bin.home}/plugins/${equinox.jar.filename}"
+					           fork="true"
+					           failonerror="true"
+					           maxmemory="128m"
+					           >
+						<arg value="-console"/>
+						<arg value="-consolelog "/>
+						<arg value="-application"/>
+						<arg value="org.eclipse.equinox.p2.publisher.CategoryPublisher"/>
+						<arg value="-metadataRepository"/>
+						<arg value="file:/${updatesite.repository}"/>
+						<arg value="-categoryDefinition"/>
+						<arg value="file:/${category.definition}"/>
+						<arg value="-categoryQualifier"/>
+						<arg value="-compress"/>
+			</java>	
+	</target>
+	<target name="get_repository_source">
+		<delete dir="${source.features.and.bundles}" failonerror="false"/>		
+		<unzip dest="${source.features.and.bundles}"
+			src="${source.features.and.bundles.zip}">
+		</unzip>
+		<get src="http://tipimouss.irisa.fr/private_data/ca.uwaterloo.gp.fmp_0.7.0.jar?root=divastudio" 
+									dest="${source.features.and.bundles}/eclipse/plugins/ca.uwaterloo.gp.fmp_0.7.0.jar"
+									usetimestamp="true"/>
+	</target>
+	
+	<target name="deploy_divastudio">
+			
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_win32.zip"
+			       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+			       keyfile="${user.home}/.ssh/id_rsa"
+			       passphrase=""
+			  />
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_win32_x86_64.zip"
+					       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+					       keyfile="${user.home}/.ssh/id_rsa"
+					       passphrase=""
+					  />
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_linux_x86_64.tar.gz"
+					       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+					       keyfile="${user.home}/.ssh/id_rsa"
+					       passphrase=""
+					  />
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_linux_x86.tar.gz"
+					       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+					       keyfile="${user.home}/.ssh/id_rsa"
+					       passphrase=""
+					  />
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_macosx-cocoa_x86_64.tar.gz"
+					       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+					       keyfile="${user.home}/.ssh/id_rsa"
+					       passphrase=""
+					  />
+			<scp file="${env.WORKSPACE}/build/divastudio_helios_macosx-cocoa.tar.gz"
+					       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
+					       keyfile="${user.home}/.ssh/id_rsa"
+					       passphrase=""
+					  />
+		</target>
+	
+</project>

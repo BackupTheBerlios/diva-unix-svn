@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="sca.diva.ComponentContribution"
+            objectClass="org.eclipse.stp.sca.diagram.edit.parts.ComponentEditPart">
+         <menu
+               id="sca.diva.Menu"
+               label="DiVA"
+               path="additions">
+            <separator
+                  name="groupSeparator">
+            </separator>
+         </menu>
+         <action
+               class="diva.sca.extension.popup.actions.GenerateComponentOSGIImplementation"
+               enablesFor="1"
+               id="sca.diva.ComponentAction"
+               label="Generate OSGi Factory"
+               menubarPath="sca.diva.Menu/groupSeparator">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="sca.diva.CompositeContribution"
+            objectClass="org.eclipse.stp.sca.diagram.edit.parts.CompositeEditPart">
+         <menu
+               id="sca.diva.Menu"
+               label="DiVA"
+               path="additions">
+            <groupMarker
+                  name="groupSeparator">
+            </groupMarker>
+         </menu>
+         <action
+               class="diva.sca.extension.popup.actions.GenerateAllComponentOSGIImplementations"
+               id="sca.diva.CompositeAction"
+               label="Generate All OSGi Factories"
+               menubarPath="sca.diva.Menu/groupSeparator">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="sca.diva.CompositeFileContribution"
+            nameFilter="*.composite"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="sca.diva.FileMenu"
+               label="DiVA"
+               path="additions">
+            <groupMarker
+                  name="groupSeparator">
+            </groupMarker>
+         </menu>
+         <action
+               class="diva.sca.extension.popup.actions.GenerateAllComponentOSGIImplementationsFromFile"
+               id="sca.diva.CompositeAction"
+               label="Generate All OSGi Factories"
+               menubarPath="sca.diva.FileMenu/groupSeparator">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

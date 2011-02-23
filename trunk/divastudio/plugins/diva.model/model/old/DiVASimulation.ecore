@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="diva" nsURI="http://www.diva.org/diva" nsPrefix="divasimulation">
+  <eClassifiers xsi:type="ecore:EClass" name="SimulationModel">
+    <eSuperTypes href="DiVA.ecore#//DiVAModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="scenario" upperBound="-1" eType="//Scenario" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//VariabilityModel"/>
+      <eOpposite href="DiVA.ecore#//VariabilityModel/simulation"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Context">
+    <eSuperTypes href="DiVA.ecore#//NamedElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variable" upperBound="-1" eType="//VariableValue" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configuration" upperBound="-1" eType="//Configuration" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oracle" containment="true">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//VariantExpression"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="verdict" eType="//Verdict"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="priority" upperBound="-1" eType="//Priority" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Configuration" eSuperTypes="//ScoredElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variant" upperBound="-1" eType="//ConfigVariant" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="verdict" eType="//Verdict"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigVariant" eSuperTypes="//ScoredElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variant" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//Variant"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Scenario">
+    <eSuperTypes href="DiVA.ecore#//NamedElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="context" upperBound="-1" eType="//Context" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ScoredElement" abstract="true">
+    <eSuperTypes href="DiVA.ecore#//DiVAModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalScore">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="score" upperBound="-1" eType="//Score" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Score">
+    <eSuperTypes href="DiVA.ecore#//DiVAModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="score">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="property" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//Property"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Priority">
+    <eSuperTypes href="DiVA.ecore#//DiVAModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="property" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//Property"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="priority">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VariableValue" abstract="true">
+    <eSuperTypes href="DiVA.ecore#//DiVAModelElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variable" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//Variable"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BoolVariableValue" eSuperTypes="//VariableValue">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bool">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EnumVariableValue" eSuperTypes="//VariableValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="literal" lowerBound="1">
+      <eType xsi:type="ecore:EClass" href="DiVA.ecore#//EnumLiteral"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Verdict">
+    <eLiterals name="none"/>
+    <eLiterals name="pass" value="1"/>
+    <eLiterals name="fail" value="2"/>
+  </eClassifiers>
+</ecore:EPackage>

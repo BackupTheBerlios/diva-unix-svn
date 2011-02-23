@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="455"
+   height="455"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.48.0 r9654"
+   version="1.0"
+   sodipodi:docname="CD_print.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="C:\Users\dvojtise\workspaces\diva\divastudio\plugins\eu.ict_diva.studio\images\DiVA_CD.png"
+   inkscape:export-xdpi="97.006332"
+   inkscape:export-ydpi="97.006332">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3211">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3213" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3215" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3203">
+      <stop
+         style="stop-color:#f5c917;stop-opacity:1;"
+         offset="0"
+         id="stop3205" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop3207" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3203"
+       id="linearGradient3209"
+       x1="-247.14287"
+       y1="162.14284"
+       x2="-169.28572"
+       y2="83.571419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(5.8256882,0,0,3.7454546,1230.4916,-304.44151)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3211"
+       id="linearGradient3217"
+       x1="-247.14287"
+       y1="162.14284"
+       x2="-169.28572"
+       y2="83.571419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(5.8256882,0,0,3.7454546,1230.4916,-304.44151)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="67.542882"
+     inkscape:cy="213.13697"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     width="455px"
+     height="295px"
+     borderlayer="true"
+     inkscape:window-width="1338"
+     inkscape:window-height="799"
+     inkscape:window-x="132"
+     inkscape:window-y="174"
+     showgrid="false"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,160)">
+    <image
+       sodipodi:absref="C:\Users\dvojtise\workspaces\diva\divastudio\plugins\eu.ict_diva.studio\images\DivaLogo.jpg"
+       xlink:href="DivaLogo.jpg"
+       inkscape:export-ydpi="600"
+       inkscape:export-xdpi="600"
+       width="388.15634"
+       height="135.25369"
+       id="image2206"
+       x="47.922272"
+       y="-77.187859" />
+    <text
+       xml:space="preserve"
+       style="font-size:73.48596191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="247.9525"
+       y="161.66389"
+       id="text2170"
+       transform="scale(0.92934746,1.0760238)"><tspan
+         sodipodi:role="line"
+         id="tspan2172"
+         x="247.9525"
+         y="161.66389">Studio</tspan></text>
+    <image
+       sodipodi:absref="C:\Users\dvojtise\workspaces\diva\divastudio\plugins\eu.ict_diva.studio\images\FP7-logo.jpg"
+       xlink:href="FP7-logo.jpg"
+       width="42.137035"
+       height="24.31978"
+       id="image2181"
+       x="214.80209"
+       y="-36.873173" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="46.467018"
+       y="190.95428"
+       id="text2202"><tspan
+         sodipodi:role="line"
+         id="tspan2204"
+         x="46.467018"
+         y="190.95428">DYNAMIC VARIABILITY IN COMPLEX, ADAPTIVE SYSTEMS</tspan></text>
+    <rect
+       style="fill:none;stroke:none"
+       id="rect2215"
+       width="129.28572"
+       height="93.571426"
+       x="-277.14285"
+       y="51.42857" />
+    <rect
+       style="fill:none;stroke:none"
+       id="rect2217"
+       width="32.857143"
+       height="30"
+       x="-171.42857"
+       y="121.42857" />
+    <rect
+       style="fill:none;stroke:none"
+       id="rect2219"
+       width="54.285713"
+       height="53.57143"
+       x="-287.85715"
+       y="52.142857" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:none"
+       id="path2221"
+       sodipodi:cx="-232.14285"
+       sodipodi:cy="88.571426"
+       sodipodi:rx="5.7142859"
+       sodipodi:ry="32.142857"
+       d="m -226.42857,88.571426 c 0,17.752014 -2.55837,32.142854 -5.71428,32.142854 -3.15592,0 -5.71429,-14.39084 -5.71429,-32.142854 0,-17.752009 2.55837,-32.142856 5.71429,-32.142856 3.15591,0 5.71428,14.390847 5.71428,32.142856 z" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="147.48227"
+       y="243.48221"
+       id="text3772"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3774"
+         x="147.48227"
+         y="243.48221">D5.3 Final RC</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.43531495;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3002"
+       sodipodi:cx="221.2234"
+       sodipodi:cy="41.956787"
+       sodipodi:rx="88.893425"
+       sodipodi:ry="106.57109"
+       d="m 310.11683,41.956787 a 88.893425,106.57109 0 1 1 -177.78685,0 88.893425,106.57109 0 1 1 177.78685,0 z"
+       transform="matrix(2.5201574,0,0,2.0939445,-329.06842,-18.558226)" />
+  </g>
+</svg>

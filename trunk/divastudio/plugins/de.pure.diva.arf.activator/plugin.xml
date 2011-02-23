@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="reasoner" name="Adaptation Reasoning and Validation Framework Reasoner" schema="schema/reasoner.exsd"/>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="de.pure.diva.arf.activator.ARFStartup">
+      </startup>
+   </extension>
+
+</plugin>

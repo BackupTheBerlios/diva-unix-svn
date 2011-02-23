@@ -1,0 +1,66 @@
+This file describes how to rebuild the various version of the Eclipse
+that build the DiVAStudio
+
+DiVAStudio_opensource_base
+--------------------------
+This is the base for the other versions.
+Its goal it to provide the basis to build the rest
+
+- Unzip eclipse 3.5
+- From Galileo update site
+- From SOA development
+		all SCA Tools feature
+- From Modeling
+		Ecore tools
+		EMF
+		EMF compare
+		GMF
+		JET
+		OCL
+		XSD
+		UML2 extender
+		UML2 tools
+- From EMF text 
+	last stable version
+- From EMF FeatureModel (http://www.eclipse.org/modeling/emft/featuremodel)
+    last stable version
+- From collaboration
+		Subversive
+- From Kermeta update site (experimental)
+		all
+- From http://download.eclipse.org/tools/ajdt/35/update
+		all but the sources
+		
+
+DiVAStudio_dev
+--------------------------
+This version is used to build the components of the DiVAStudio
+- Unzip the DiVAStudio_opensource_base
+- get the team project set
+	and retrieve all the source projects
+- from university of Lancaster ArborCraft update site : http://www.comp.lancs.ac.uk/~westonn/arborcraft
+	install arborcraft	
+- copy the plugin (from project thirdparty_plugins) 
+	ca.uwaterloo.gp.fmp*.jar to the dropin folder of this eclipse
+	(later we should repackage that from the sources on sourceforge ?)
+
+- generate the site and all plugins (in eu.ict_diva.studio.site/site.xml > build all)
+
+
+DiVAStudio (final)
+--------------------------
+This is the studio delivered to the users
+- Unzip the DiVAStudio_opensource_base
+- adapt this version by applying the ant script from the DiVAStudio_dev:
+	 run the eu.ict_diva.studio/patch_existing_eclipse_build.xml
+- from university of Lancaster ArborCraft update site : http://www.comp.lancs.ac.uk/~westonn/arborcraft
+	install arborcraft
+- from the local update in DiVAStudio_dev
+	retrieve all features
+- copy the plugin (in project thirdparty_plugins) 
+	ca.uwaterloo.gp.fmp*.jar to the dropin folder of this eclipse
+- to install SmartAdapterts:
+  - put fr.irisa.triskell.kermeta.flora2_1.0.0.jar into dropins
+  - put the third parties (flora2 + XSB) a PatternMatching folder, inside the eclipse folder (with eclipse.exe)
+
+	

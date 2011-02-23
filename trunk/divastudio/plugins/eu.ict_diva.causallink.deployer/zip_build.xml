@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="eu.ict_diva.causallink.divaruntime.deployer" default="build.zip" basedir=".">
+	<target name="build.zip" 
+		description="Build the zip from this project in order to be deployed in eu.ict_diva.causallink.divaruntime.bin">
+		<tstamp>
+			<format property="TODAY_UK" pattern="d-MMMM-yyyy" locale="en"/>
+		</tstamp>
+		<filter token="BUILD.DATE" value="${TODAY_UK}"/>
+		<mkdir dir="mytemp"/>
+		<copy todir="mytemp" failonerror="true" overwrite="true">
+			<fileset dir="." includes="*jar/*,*model/*,*log4j/*" excludes="*zip_build.xml,*mytemp, eu.ict_diva.causallink.divaruntime.bin.tools.zip"/>
+		</copy>
+		<!--<copy file="readme.txt" 
+			tofile="mytemp/readme.txt"
+			filtering="true"
+			overwrite="true"/>-->
+		<zip destfile="zips/eu.ict_diva.causallink.divaruntime.tools.bin.zip" basedir="mytemp" includes="**" filesonly="false" whenempty="skip" update="false"/>
+		<delete dir="mytemp"/>
+	</target>
+</project>

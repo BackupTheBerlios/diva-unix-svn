@@ -1,0 +1,156 @@
+/* $Id:$ 
+ * Creation : September 22, 2009
+ * Licence  : EPL 
+ * Copyright:
+ * Authors  : 
+ *            dvojtise
+ */
+@mainClass "fmp::Project"
+@mainOperation "fmp2diva_pass1"
+
+
+package fmp;
+
+
+require kermeta
+require "platform:/lookup/ca.uwaterloo.gp.fmp/src/fmp.ecore"
+require "platform:/lookup/diva.model/model/DiVA_Merged.ecore"
+
+using diva
+using kermeta::standard
+
+aspect class Project
+{
+	reference createdVariabilityModel : VariabilityModel
+	operation fmp2diva_pass1() : VariabilityModel is do 
+		createdVariabilityModel := VariabilityModel.new
+		
+		
+		
+		// find all elligibleDimension and create them (including their Variants)
+		self.model.allElligibleFeatureAsDimensions().each{ f |
+			var d1 : Dimension init f.createDimension
+			if not d1.isVoid then
+				createdVariabilityModel.dimension.add(d1)
+			end
+		}
+		// find all elligibleDimension and create them (including their Variants)
+	/*	self.metaModel.allElligibleFeatureAsDimensions().each{ f |
+			var d2 : Dimension init f.createDimension
+			if not d2.isVoid then
+				createdVariabilityModel.dimension.add(d2)
+			end
+		}
+		// find all elligibleDimension and create them (including their Variants)
+		self.metaMetaModel.allElligibleFeatureAsDimensions().each{ f |
+			var d3 : Dimension init f.createDimension
+			if not d3.isVoid then
+				createdVariabilityModel.dimension.add(d3)
+			end
+		} */
+		result := createdVariabilityModel
+	end
+}
+aspect class Feature
+{
+	reference createdDimension : Dimension
+	reference createdVariant : Variant
+	
+	/**
+	 * if this Feature is elligible as a Dimension then create the Dimension
+	 */
+	operation createDimension() : Dimension is do
+		stdio.writeln("call createDimension")
+		if isElligibleAsDimension then
+			stdio.writeln("   createDimension for "+ self.toString)
+			createdDimension := Dimension.new
+			
+			createdDimension.name := name
+			
+			// for all leaf, add them to the dimension
+			self.children.select{f1 | f1.isLeaf}.each{ f | 
+						var variant : Variant
+						if f.isInstanceOf(Feature) then
+							variant :=f.asType(Feature).createVariant()
+							createdDimension.variant.add(variant)
+						end
+					}
+			result := createdDimension
+		else
+			result := void
+		end
+	end
+	
+	operation createVariant() : Variant is do
+		if isLeaf then
+			createdVariant := Variant.new
+			
+			
+			createdVariant.name := name 
+			if not typedValue.isVoid then createdVariant.name := typedValue.stringValue end
+			result := createdVariant
+		else
+			result := void
+		end
+	end
+	
+	operation isElligibleAsDimension() : Boolean is do
+		result := self.children.exists{ f | f.isLeaf}
+	end
+
+	/**
+	 * returns all the features contained by this feature that are elligible as Dimension
+	 * (including self if tit is elligible too)
+	 */
+	operation allElligibleFeatureAsDimensions() : Set<Feature> is do
+		result := Set<Feature>.new
+		stdio.writeln("scanning feature for Dimension")
+		if isElligibleAsDimension then 
+			stdio.writeln("Elligible dimension found")
+			result.add(self) 
+		end
+		stdio.writeln("scanning children")
+		
+		self.children.each{ f | 
+			if f.isInstanceOf(Feature) then
+				result.addAll(f.asType(Feature).allElligibleFeatureAsDimensions)
+			end
+		}
+	end
+	/* operation fmp2diva_pass1(variabilityModel : VariabilityModel) : Object  is do 
+		
+		if configurations.isEmpty() and self.container.isInstanceOf(Project) then
+			var dimension : Dimension init Dimension.new
+			createdDimension := dimension
+			dimension.name := self.name
+			variabilityModel.dimension.add(dimension)
+		else
+			if configurations.isEmpty() and not self.container.isInstanceOf(Project) then
+				
+				createdVariant := Variant.new
+				result := createdVariant
+			else
+				if self.configurations.exists{ f | f.isLeaf} then
+					var dimension : Dimension init Dimension.new
+					createdDimension := dimension
+					dimension.name := self.name
+					variabilityModel.dimension.add(createdDimension)
+					self.configurations.select{f1 | f1.isLeaf}.each{ f | 
+						var variant : Variant
+						variant ?=f.fmp2diva_pass1(variabilityModel)
+						dimension.variant.add(variant)
+					}
+					self.configurations.select{f1 | not f1.isLeaf}.each{ f | 
+						f.fmp2diva_pass1(variabilityModel)
+					}
+				end
+			end 
+		endt
+	end
+	*/
+}
+aspect class Node {
+	operation isLeaf() : Boolean is do
+		result := children.isEmpty()
+	end
+}

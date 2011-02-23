@@ -1,0 +1,51 @@
+
+<sca:composite xmlns:sca="http://www.osoa.org/xmlns/sca/1.0" name="Instances" targetNamespace="http://sample">
+	<sca:component constrainingType="eu.diva.MutantGenerator" name="MutantGenerator">
+	<sca:implementation.java class="eu.diva.MutantGenerator.MutantGeneratorImpl"/>
+		<sca:service name="generateMutantsPort">
+			<sca:interface.java interface="eu.diva.wp2.generateMutants"/>
+		</sca:service>
+	</sca:component>
+	<sca:component constrainingType="eu.diva.Simulator" name="Simulator">
+	<sca:implementation.java class="eu.diva.Simulator.SimulatorImpl"/>
+		<sca:service name="populateValidConfigurationsPort">
+			<sca:interface.java interface="eu.diva.wp2.populateValidConfigurations"/>
+		</sca:service>
+		<sca:service name="populatePrioritiesPort">
+			<sca:interface.java interface="eu.diva.wp2.populatePriorities"/>
+		</sca:service>
+		<sca:service name="populateScoresPort">
+			<sca:interface.java interface="eu.diva.wp2.populateScores"/>
+		</sca:service>
+		<sca:service name="populateCompleteSimulationPort">
+			<sca:interface.java interface="eu.diva.wp2.populateCompleteSimulation"/>
+		</sca:service>
+		<sca:service name="cleanModelPort">
+			<sca:interface.java interface="eu.diva.wp2.cleanModel"/>
+		</sca:service>
+	</sca:component>
+	<sca:component constrainingType="eu.diva.Validator" name="Validator">
+	<sca:implementation.java class="eu.diva.Validator.ValidatorImpl"/>
+		<sca:service name="populateVerdictsPort">
+			<sca:interface.java interface="eu.diva.wp2.populateVerdicts"/>
+		</sca:service>
+	</sca:component>
+	<sca:component constrainingType="eu.diva.AlloyGenerator" name="AlloyGenerator">
+	<sca:implementation.java class="eu.diva.AlloyGenerator.AlloyGeneratorImpl"/>
+		<sca:service name="printAlloySpecPort">
+			<sca:interface.java interface="eu.diva.wp2.printAlloySpec"/>
+		</sca:service>
+	</sca:component>
+	<sca:component constrainingType="eu.diva.CoverageAnalysor" name="CoverageAnalysor">
+	<sca:implementation.java class="eu.diva.CoverageAnalysor.CoverageAnalysorImpl"/>
+		<sca:service name="printVariantCoveragePort">
+			<sca:interface.java interface="eu.diva.wp2.printVariantCoverage"/>
+		</sca:service>
+		<sca:service name="printCSVCoveragePort">
+			<sca:interface.java interface="eu.diva.wp2.printCSVCoverage"/>
+		</sca:service>
+		<sca:service name="printCSVScenarioSizesPort">
+			<sca:interface.java interface="eu.diva.wp2.printCSVScenarioSizes"/>
+		</sca:service>
+	</sca:component>
+</sca:composite>

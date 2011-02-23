@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Partition Model Reasoner Ui Plug-in
+Bundle-SymbolicName: de.pure.diva.arf.pm.reasoner.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.pure.diva.arf.pm.reasoner.ui.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ de.pure.diva.arf.activator,
+ de.pure.diva.arf.pm.reasoner
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: ict-diva.eu

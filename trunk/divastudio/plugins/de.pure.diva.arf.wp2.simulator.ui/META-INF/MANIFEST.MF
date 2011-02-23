@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WP2 Simulator Ui Plug-in
+Bundle-SymbolicName: de.pure.diva.arf.wp2.simulator.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.pure.diva.arf.wp2.simulator.ui.Activator
+Bundle-Vendor: ict-diva.eu
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ de.pure.diva.arf.ui,
+ de.pure.diva.arf.service,
+ de.pure.diva.arf.activator,
+ de.pure.diva.arf.wp2.simulator,
+ org.eclipse.core.resources,
+ org.eclipse.featuremodel.metamodel
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy

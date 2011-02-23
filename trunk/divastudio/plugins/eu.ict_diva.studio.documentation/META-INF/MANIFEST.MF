@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DiVA Studio Documentation Plug-in
+Bundle-SymbolicName: eu.ict_diva.studio.documentation; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: eu.ict_diva.studio.documentation.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: ict-diva.eu

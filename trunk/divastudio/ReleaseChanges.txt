@@ -1,0 +1,71 @@
+This files list the changes done in the DiVAStudio release in an human readable way 
+Ie. this isn't a list of the technical SVN commit but rather an information to the studio user
+in order to know wether the new studio release contain valuable changes for them.
+Typically, this must be like "Fixed bug  foo", "Added feature bar", "Improved component by doing  ...", etc 
+For history, prefix each entry by the date
+
+-------------------------------
+# January 2011: #
+-------------------------------
+- re-enable diva.runtime (causallink deployer)
+
+-------------------------------
+# December 2010: Core #
+-------------------------------
+- upgrade to Eclipse Helios
+- increase default memory
+
+-------------------------------
+# November 2010: ARF #
+-------------------------------
+- EMF Feature Model integration
+- Partition Model Reasoner
+
+-------------------------------
+# July 2010: Core #
+-------------------------------
+- removed deprecated component to save some disk space
+
+-------------------------------
+# June 2010: SmartAdaptersV2 #
+-------------------------------
+- Now possible to weave a sequence of aspect models at design-time by selecting several *.drl files and a base model
+- (Previously, aspect models needed to be woven one by one) 
+
+-------------------------------
+# June 2010: ART Editors  #
+-------------------------------
+- ART Text editor integrated
+- ART SmartAdapters meta-model updates (existing aspect models needs to be migrated)
+- Added text editor for aspects
+
+-------------------------------
+# June 2010: ARF #
+-------------------------------
+- Added Random Path Reasoner
+- Improved performance and memory usage for random reasoning
+
+-------------------------------
+# June 2010: DiVAStudioBase #
+-------------------------------
+- Added EMF Feature Model
+
+-------------------------------
+# May 2010: Core #
+-------------------------------
+- Added SCA editors to the studio
+
+-------------------------------
+# March 2010: SmartAdaptersV2 #
+-------------------------------
+- Integration at design-time (right-click within Eclipse) and at runtime
+- Faster (compiled to Java + Drools code)
+
+------------------------------------------
+# Feb-March 2010: ART metamodels updates #
+------------------------------------------
+- The ART metamodels for designing aspects (ie, the relaxed version of ART and the specialization of the SmartAdapters metamodel for ART) are now fully integrated within Eclipse
+- No need to create dynamic instances (which was not very robust because it created relative paths to the metamodel into the XMI files)
+- Warnings:
+  - File extensions have changed: .artP replaces .xmi for the advice and the pointcut models, .smART replaces .xmi for the aspect models
+  - The headers of the XMI (artP and smART) files should be updated. See the example provided in /eu.ict_diva.studies/CAS/weaving/aspectsV2

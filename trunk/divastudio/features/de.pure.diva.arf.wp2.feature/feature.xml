@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.pure.diva.arf.wp2.feature"
+      label="DiVA WP2 Simulator Feature"
+      version="1.0.0.qualifier"
+      provider-name="ict-diva.eu">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="de.pure.diva.arf.service"/>
+      <import plugin="fr.irisa.triskell.kermeta.interpreter"/>
+      <import plugin="de.pure.diva.arf.activator"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="de.pure.diva.arf.ui"/>
+      <import plugin="org.eclipse.core.resources"/>
+   </requires>
+
+   <plugin
+         id="de.pure.diva.arf.wp2.simulator"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.wp2.simulator.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

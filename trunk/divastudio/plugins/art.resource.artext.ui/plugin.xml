@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+	<extension point="org.emftext.access.syntax.ui">
+		<metaInformationProvider class="art.resource.artext.ui.ArtextUIMetaInformation" id="art.resource.artext.ui.ArtextUIMetaInformation">
+		</metaInformationProvider>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors">
+		<editor class="art.resource.artext.ui.ArtextEditor" contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor" extensions="artext" icon="icons/editor_icon.gif" id="art.resource.artext.ui.ArtextEditor" name="EMFText artext Editor">
+			<contentTypeBinding contentTypeId="art.resource.artext"/>
+		</editor>
+	</extension>
+	
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="art.resource.artext.ui.ArtextPreferenceInitializer">
+		</initializer>
+	</extension>
+	
+	<extension point="org.eclipse.ui.preferencePages">
+		<page name="Artext Text Editor" id="art.resource.artext.ui.ArtextPreferencePage" class="art.resource.artext.ui.ArtextPreferencePage" category="org.eclipse.ui.preferencePages.GeneralTextEditor">
+		</page>
+		<page name="Syntax Coloring" id="art.resource.artext.ui.ArtextSyntaxColoringPreferencePage" class="art.resource.artext.ui.ArtextSyntaxColoringPreferencePage" category="art.resource.artext.ui.ArtextPreferencePage">
+		</page>
+		<page name="Brackets" id="art.resource.artext.ui.ArtextBracketPreferencePage" class="art.resource.artext.ui.ArtextBracketPreferencePage" category="art.resource.artext.ui.ArtextPreferencePage">
+		</page>
+	</extension>
+	
+	<extension point="org.eclipse.ui.newWizards">
+		<category id="org.emftext.runtime.ui.EMFTextFileCategory" name="EMFText File">
+		</category>
+		<wizard category="org.emftext.runtime.ui.EMFTextFileCategory" icon="/icons/default_new_icon.gif" class="art.resource.artext.ui.ArtextNewFileWizard" id="art.resource.artext.ui.ArtextNewFileWizard" name="EMFText .artext file">
+		</wizard>
+	</extension>
+	
+	<extension point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator class="art.resource.artext.ui.ArtextMarkerResolutionGenerator" markerType="art.resource.artext.problem" />
+	</extension>
+	
+	<extension point="org.eclipse.core.filebuffers.annotationModelCreation">
+		<factory class="art.resource.artext.ui.ArtextAnnotationModelFactory" extensions="artext" />
+	</extension>
+	
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+		<content-type id="art.resource.artext" name=".artext File" base-type="org.eclipse.core.runtime.text" file-extensions="artext"/>
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors.documentProviders">
+		<provider class="org.eclipse.ui.editors.text.TextFileDocumentProvider" extensions="artext" id="art.resource.artext.ui.provider" />
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors.annotationTypes">
+		<type name="art.resource.artext.ui.occurences" />
+		<type name="art.resource.artext.ui.occurences.declaration" super="art.resource.artext.ui.occurences" />
+	</extension>
+	
+	<extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
+		<specification annotationType="art.resource.artext.ui.occurences" label="Occurrences (in .artext files)" icon="/icons/occurrence_icon.gif" textPreferenceKey="artext.occurrenceIndication" textPreferenceValue="false" highlightPreferenceKey="artext.occurrenceHighlighting" highlightPreferenceValue="true" contributesToHeader="false" overviewRulerPreferenceKey="artext.occurrenceIndicationInOverviewRuler" overviewRulerPreferenceValue="true" verticalRulerPreferenceKey="artext.occurrenceIndicationInVerticalRuler" verticalRulerPreferenceValue="false" colorPreferenceKey="artext.occurrenceIndicationColor" colorPreferenceValue="212,212,212" presentationLayer="4" showInNextPrevDropdownToolbarActionKey="artext.showOccurrenceInNextPrevDropdownToolbarAction" showInNextPrevDropdownToolbarAction="true" isGoToNextNavigationTargetKey="artext.isOccurrenceGoToNextNavigationTarget" isGoToNextNavigationTarget="false" isGoToPreviousNavigationTargetKey="artext.isOccurrenceGoToPreviousNavigationTarget" isGoToPreviousNavigationTarget="false" textStylePreferenceKey="artext.occurrenceTextStyle" textStylePreferenceValue="NONE" />
+		<specification annotationType="art.resource.artext.ui.occurences.declaration" label="Declarations (in .artext files)" textPreferenceKey="artext.declarationIndication" textPreferenceValue="false" highlightPreferenceKey="artext.declarationHighlighting" highlightPreferenceValue="true" overviewRulerPreferenceKey="artext.declarationIndicationInOverviewRuler" overviewRulerPreferenceValue="true" verticalRulerPreferenceKey="artext.declarationIndicationInVerticalRuler" verticalRulerPreferenceValue="false" colorPreferenceKey="artext.declarationIndicationColor" colorPreferenceValue="240,216,168" presentationLayer="4" textStylePreferenceKey="artext.declarationTextStyle" textStylePreferenceValue="NONE" />
+	</extension>
+	
+</plugin>

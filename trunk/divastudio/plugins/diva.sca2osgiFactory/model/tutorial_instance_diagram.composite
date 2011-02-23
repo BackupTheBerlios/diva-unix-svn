@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sca:composite xmlns:sca="http://www.osoa.org/xmlns/sca/1.0" name="tutorial_type_diagram" targetNamespace="http://eclipse.org/tutorial/model/tutorial_type_diagram">
+  <sca:component constrainingType="Client" name="Client1">
+    <sca:implementation.java class="tutorial.impl.ClientImpl"/>
+    <sca:reference multiplicity="0..n" name="defaultHelloWorld">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:reference>
+    <sca:reference multiplicity="1..1" name="otherHelloWorlds">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:reference>
+    <sca:property name="Type">Client</sca:property>
+  </sca:component>
+  <sca:component constrainingType="Client" name="Client2">
+    <sca:implementation.java class="tutorial.impl.ClientImpl"/>
+    <sca:reference multiplicity="0..n" name="defaultHelloWorld">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:reference>
+    <sca:reference multiplicity="1..1" name="otherHelloWorlds">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:reference>
+    <sca:property name="Type">Client</sca:property>
+  </sca:component>
+  <sca:component constrainingType="Server" name="Server1">
+    <sca:implementation.java class="tutorial.impl.HelloWorldImpl"/>
+    <sca:service name="helloWorld">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:service>
+    <sca:reference name="voiceHelloWorld">
+      <sca:interface.java interface="tutorial.diva.VoiceHelloWorld"/>
+    </sca:reference>
+    <sca:property name="Type">Server</sca:property>
+  </sca:component>
+  <sca:component constrainingType="Server" name="Server2">
+    <sca:implementation.java class="tutorial.impl.HelloWorldImpl"/>
+    <sca:service name="helloWorld">
+      <sca:interface.java interface="tutorial.diva.HelloWorld"/>
+    </sca:service>
+    <sca:reference name="voiceHelloWorld">
+      <sca:interface.java interface="tutorial.diva.VoiceHelloWorld"/>
+    </sca:reference>
+    <sca:property name="Type">Server</sca:property>
+  </sca:component>
+  <sca:wire source="Client1/defaultHelloWorld" target="Server1/helloWorld"/>
+  <sca:wire source="Client2/defaultHelloWorld" target="Server1/helloWorld"/>
+  <sca:wire source="Client1/otherHelloWorlds" target="Server2/helloWorld"/>
+</sca:composite>

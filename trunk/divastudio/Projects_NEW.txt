@@ -1,0 +1,41 @@
+PROJETS A REMETTRE DANS LE BUILD UNE FOIS A JOUR:
+
+eu.ict_diva.causallink.deployer 		https://scm.gforge.inria.fr/svn/divastudio/trunk/causallink_projects/eu.ict_diva.causallink.deployer
+eu.ict_diva.causallink.samples.deployer 			https://scm.gforge.inria.fr/svn/divastudio/trunk/causallink_projects/eu.ict_diva.causallink.samples.deployer
+
+CE QU'IL Y A DANS LE BUILD:
+
+diva.model 							https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/diva.model
+diva.model.edit 					https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/diva.model.edit
+diva.model.editor 					https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/diva.model.editor
+diva.model.simulation 				https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/diva.model.simulation
+eu.ict_diva.studio 					https://scm.gforge.inria.fr/svn/divastudio/trunk/branding_projects/eu.ict_diva.studio
+eu.ict_diva.studio.documentation 	https://scm.gforge.inria.fr/svn/divastudio/trunk/branding_projects/eu.ict_diva.studio.documentation
+eu.ict_diva.studies.ui 				https://scm.gforge.inria.fr/svn/divastudio/trunk/studies_projects/eu.ict_diva.studies.ui
+org.kermeta.art.model 				https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/org.kermeta.art.model
+art.resource.artext.ui				https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/art.resource.artext.ui
+art.resource.artext 					https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/art.resource.artext
+art.resource.art.popups 				https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/art.resource.art.popups
+org.kermeta.smartadapters.diva.toDrools.ui  			https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/org.kermeta.smartadapters.diva.toDrools.ui
+org.kermeta.smartadapters.drools5.diva.standalone  	https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/org.kermeta.smartadapters.drools5.diva.standalone
+smartadapters4ART.resource.smARText					https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/smartadapters4ART.resource.smARText
+smartadapters4ART.resource.smARText.ui				https://scm.gforge.inria.fr/svn/divastudio/trunk/diva_projects/smartadapters4ART.resource.smARText.ui
+diva.sca2osgiFactory  		https://scm.gforge.inria.fr/svn/divastudio/trunk/causallinkv2_projects/diva.sca2osgiFactory
+de.pure.diva.arf 					https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf
+de.pure.diva.arf.activator 			https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.activator
+de.pure.diva.arf.service 				https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.service
+de.pure.diva.arf.ui 					https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.ui
+de.pure.diva.arf.documentation 	https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.documentation
+de.pure.diva.arf.examples.walkthroughs 	https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.examples.walkthroughs
+de.pure.diva.arf.examples.walkthroughs.ui 	https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.examples.walkthroughs.ui
+de.pure.diva.arf.reasoner.designtime 		https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.reasoner.designtime
+de.pure.diva.arf.alloy.sat 			https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.alloy.sat
+de.pure.diva.arf.alloy.sat.ui 			https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.alloy.sat.ui
+de.pure.diva.arf.rc.reasoner 			https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.rc.reasoner
+de.pure.diva.arf.rc.reasoner.ui 		https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.rc.reasoner.ui
+de.pure.diva.arf.pm.reasoner 		https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.pm.reasoner
+de.pure.diva.arf.pm.reasoner.ui 		https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.pm.reasoner.ui
+de.pure.diva.arf.wp2.simulator 		https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.wp2.simulator
+de.pure.diva.arf.wp2.simulator.ui 	https://scm.gforge.inria.fr/svn/divastudio/trunk/arf_projects/de.pure.diva.arf.wp2.simulator.ui
+uk.ulancs.diva.fmp2diva 			https://scm.gforge.inria.fr/svn/divastudio/trunk/fmp_projects/uk.ulancs.diva.fmp2diva
+uk.ulancs.diva.fmp2diva	 		https://scm.gforge.inria.fr/svn/divastudio/trunk/fmp_projects/uk.ulancs.diva.fmp2diva

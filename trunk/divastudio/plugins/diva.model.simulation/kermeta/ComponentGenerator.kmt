@@ -1,0 +1,133 @@
+/* $Id:$ 
+ * Creation : September 22, 2009
+ * Licence  : EPL 
+ * Copyright:
+ * Authors  : 
+ *            ffl
+ */
+@mainClass "ComponentGenerator::Main"
+@mainOperation "main"
+
+package ComponentGenerator;
+
+require kermeta
+//require "platform:/plugin/org.kermeta.language.mdk/src/kmt/language/helpers/AllHelpers.kmt"
+require "platform:/plugin/fr.irisa.triskell.kermeta.ecore_1.3.2/src/kermeta/helpers/EcoreHelper.kmt"
+require "http://art"
+require "platform:/resource/org.kermeta.art.Runtime2SCA/src/kermeta/runtime2XML/Runtime2SCA.kmt"
+//require "http://art/instance"
+//require "http://art/type"
+
+using kermeta::standard
+using kermeta::utils
+using kermeta::persistence
+using kermeta::io
+using EcoreHelpers
+using ecore
+using art
+using art::instance
+using art::type
+using art::implem
+
+class Main
+{
+	operation loadEcore() : EcoreHelper is do
+		var uri : String init "platform:/resource/diva.model/kermeta/Main.ecore"
+		// Load the model
+		result := EcoreHelper.new
+		result.loadModel(uri)
+	end
+
+	operation main() : Void is do 
+	
+		var packageName : String init "diva"
+		var className : String init "Main"
+	
+		var model : EcoreHelper init loadEcore()
+		var cls : EClass init 
+			model.packages.detect{p | p.name == packageName}.eClassifiers.detect{c | c.name == className}.asType(EClass)
+		
+		components := Hashtable<String, PrimitiveType>.new
+		services := Set<FunctionalService>.new
+		composite := CompositeInstance.new
+		composite.name := "Instances"
+		
+		cls.eOperations.each{ o |
+			//stdio.writeln(o.name)
+			o.eAnnotations.select{a | a.source == "kermeta"}.each{ a |
+				a.details.select{ d |  d.key == "componentType" }.each{d |
+					createComponentForOperation(o, d.~value)
+				}
+			}
+		}
+		
+		stdio.writeln("Creating target Model")
+		// Create Target Model
+		var uri : String init "platform:/resource/diva.model/kermeta/WP2.art"
+		var res : EMFRepository init EMFRepository.new
+        var resource : Resource init res.createResource(uri, "http://art")
+        
+        var root : System init System.new
+        
+        services.each{ s |
+        	root.services.add(s)
+        }
+        
+        components.values().each{ c | 
+        	root.types.add(c)
+        }
+        
+        root.root := composite
+       
+        stdio.writeln("Saving model")
+        resource.add(root)
+        resource.save
+        stdio.writeln("Done")
+        
+        var g : runtime2SCA::Main init runtime2SCA::Main.new
+        
+        stdio.writeln("Generating SCA model")
+        g.mainWithParameter("platform:/resource/diva.model/kermeta/WP2.art", 
+        					"platform:/resource/diva.model/kermeta/WP2.composite")
+		
+		
+	end
+	
+	reference components : Hashtable<String, PrimitiveType>
+	reference services : Set<FunctionalService>
+	reference composite : CompositeInstance
+	
+	operation  createComponentForOperation(o : EOperation, compName : String) is do
+		// Get the component
+		var comp : PrimitiveType init components.getValue(compName)
+		if comp == void then
+			comp := PrimitiveType.new
+			comp.name := compName
+			components.put(comp.name, comp)
+			// Create the corresponding primitive instance
+			var inst : PrimitiveInstance init PrimitiveInstance.new
+			inst.name := compName
+			inst.type := comp
+			composite.subComponent.add(inst)
+			var impl : OSGiComponent init OSGiComponent.new
+			impl.implementingClass := "eu.diva.wp2." + compName + "Impl"
+			inst.implem := impl
+		end
+		
+		// Create the service
+		var srv : FunctionalService init FunctionalService.new
+        srv.name := "eu.diva.wp2." + o.name
+        services.add(srv)
+        
+        // Create and add the port
+		var p : Port init Port.new
+        p.name := o.name + "Port"
+        p.upper := -1
+        p.lower := 0
+        p.role := "server" // use "client" for required port
+        p.service := srv
+        p.isOptional := true
+        comp.port.add(p)
+		
+	end
+}

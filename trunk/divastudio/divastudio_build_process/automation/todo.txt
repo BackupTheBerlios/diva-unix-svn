@@ -1,0 +1,48 @@
+
+
+5.2.100 Documentation of DivaSutio base manual creation  
+	Document the procedure that explains the tasks for creating a new DiVAstudio base
+	(this document can start from the information of the initial manual procedure https://scm.gforge.inria.fr/svn/divastudio/trunk/divastudio/divastudio_build_process/manual/DiVAStudio_build_notes.txt)
+	It must also explain how to manually post the resulting file on the web (using forge ssh/scp)
+	(http://divastudio.gforge.inria.fr/bundle/latest_build/DiVAStudioBase.zip)
+5.2.101 Sources organization for automated build [All partners]
+	All sources from all partners must be organized in the SVN following a build structure in order to simplify the compilation automation (5.2.102)
+	the build structure is located in the SVN : https://scm.gforge.inria.fr/svn/divastudio/trunk/divastudio
+		the "plugins" folder must have svn:externals that points to all the plugins that
+		need to be compiled
+		the "features" folder must have svn:externals that points to all the features that
+		need to be compiled
+		the features/eu.ict_diva.studio.main.feature/feature.xml must reference all the features that
+		need to be compiled	
+5.2.102 Automation of the compilation
+	Automates the build of the divastudio sources in a deployable format (format being used by Task 5.2.103)	
+	We suppose that we have a local check out of the build structure (that includes  of all the sources) from https://scm.gforge.inria.fr/svn/divastudio/trunk/divastudio
+	The task must get and unzip a base from the web. Then, it must build the sources against this base.
+	It will export the resulting build as a set of jar ready to deploy (as an update site)
+	and finally publish it for the partners on the web  (http://divastudio.gforge.inria.fr/bundle/latest_build/updatesite)
+	
+	This script/program must be deployable on the infrastructure (Task 5.2.105) and also runnable/testable locally. By runnable locally, 
+	we means, that if we checkout the build structure locally, one can launch the compilation with one command on the command line 
+	regardless of the physical location on the disk.
+	
+5.2.103 Automation of the build of the DiVA bundle 
+	Automates the build of a full eclipse bundle from the latest DivaStudio base and the latest compiled
+	This must also ensure that all actions from the manual procedure are handled, including a clean installation and the branding)
+  	The result must be published for the partners on http://divastudio.gforge.inria.fr/bundle/latest_build
+	This script/program must be deployable on the infrastructure (Task 5.2.105) and also testable locally 
+
+5.2.104 Automation of storage and cleanup of the bundles on the web server
+	This task is responsible for providing a way of maintaining a reasonable amount of build archives regarding disk usage. 
+	It is able to store archive from the latest build and remove old archives when some criterion are reached.
+	For example, we can keep one archive per month on the last 5 months.
+	This script/program must be deployable on the infrastructure (Task 5.2.105) and also testable locally
+	
+5.2.105 Continuous build infrastructure [INRIA]
+	This task provides the physical infrastructure to run all the automation scripts
+	Installation of a machine (physical or virtual) with an OS suitable for running the automation tasks.
+	Installation of the required compilation/build tools.
+	Configuration of the machine to launch the automation tasks on a regular basis (for example every day or every week for )
+	Configuration of the machine for notifying the partners in case of trouble when the scripts notify a failure.
+	This can typically be done using an hudson server.	
+	
+ 

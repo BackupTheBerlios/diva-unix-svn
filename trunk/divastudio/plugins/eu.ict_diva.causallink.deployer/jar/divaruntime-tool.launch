@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.EquinoxLauncher">
+<booleanAttribute key="append.args" value="true"/>
+<booleanAttribute key="automaticAdd" value="false"/>
+<booleanAttribute key="automaticValidate" value="false"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="true"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/divaruntime-tool"/>
+<booleanAttribute key="default_auto_start" value="false"/>
+<intAttribute key="default_start_level" value="1"/>
+<booleanAttribute key="includeOptional" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-console"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dorg.apache.felix.eventadmin.Timeout=0&#13;&#10;-Dosgi.install.area=${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/ -Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dosgi.bundles=${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/org.apache.felix.eventadmin-1.0.0.jar@1:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.divastudio.services_1.0.0.jar@1:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.osgi.component.framework_1.0.0.jar@1:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.runtime.causallink.gui_1.0.0.jar@start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.runtime.causallink.osgi_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.runtime.checker_1.0.0.jar@start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict_diva.runtime.osgi.bootstrap_1.0.0.jar@4:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/org.kermeta.osgi.bundleFactory_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/org.kermeta.osgi.instanceFactory_1.0.0.jar@3:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/eu.ict-diva.runtime.causallink_1.0.0.jar@1:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/tutorial.diva.cas.monitoring.stub_1.0.0.jar@3:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.service_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.core_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.component_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.reasoner.runtime_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.alloy.sat_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/de.pure.diva.arf.rc.reasoner_1.0.0.jar@2:start,${workspace_loc}/eu.ict_diva.causallink.tools.bin/jar/diva.model.osgi_1.0.0.jar@1:start"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+</launchConfiguration>

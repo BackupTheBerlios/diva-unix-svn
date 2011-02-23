@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ASCII"?>
+<art:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:art="http://art" xmlns:implem="http://art/implem" xmlns:instance="http://art/instance" xmlns:type="http://art/type">
+  <root name="Instances">
+    <subComponent xsi:type="instance:PrimitiveInstance" name="MutantGenerator" type="//@types.2">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="eu.diva.wp2.MutantGeneratorImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Simulator" type="//@types.4">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="eu.diva.wp2.SimulatorImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Validator" type="//@types.1">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="eu.diva.wp2.ValidatorImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="AlloyGenerator" type="//@types.3">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="eu.diva.wp2.AlloyGeneratorImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="CoverageAnalysor" type="//@types.0">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="eu.diva.wp2.CoverageAnalysorImpl"/>
+    </subComponent>
+  </root>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.generateMutants"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.populateValidConfigurations"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.populatePriorities"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.populateScores"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.populateVerdicts"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.populateCompleteSimulation"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.printAlloySpec"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.cleanModel"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.printVariantCoverage"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.printCSVCoverage"/>
+  <services xsi:type="type:FunctionalService" name="eu.diva.wp2.printCSVScenarioSizes"/>
+  <types xsi:type="type:PrimitiveType" name="CoverageAnalysor">
+    <port name="printVariantCoveragePort" lower="0" upper="-1" service="//@services.8" role="server"/>
+    <port name="printCSVCoveragePort" lower="0" upper="-1" service="//@services.9" role="server"/>
+    <port name="printCSVScenarioSizesPort" lower="0" upper="-1" service="//@services.10" role="server"/>
+  </types>
+  <types xsi:type="type:PrimitiveType" name="Validator">
+    <port name="populateVerdictsPort" lower="0" upper="-1" service="//@services.4" role="server"/>
+  </types>
+  <types xsi:type="type:PrimitiveType" name="MutantGenerator">
+    <port name="generateMutantsPort" lower="0" upper="-1" service="//@services.0" role="server"/>
+  </types>
+  <types xsi:type="type:PrimitiveType" name="AlloyGenerator">
+    <port name="printAlloySpecPort" lower="0" upper="-1" service="//@services.6" role="server"/>
+  </types>
+  <types xsi:type="type:PrimitiveType" name="Simulator">
+    <port name="populateValidConfigurationsPort" lower="0" upper="-1" service="//@services.1" role="server"/>
+    <port name="populatePrioritiesPort" lower="0" upper="-1" service="//@services.2" role="server"/>
+    <port name="populateScoresPort" lower="0" upper="-1" service="//@services.3" role="server"/>
+    <port name="populateCompleteSimulationPort" lower="0" upper="-1" service="//@services.5" role="server"/>
+    <port name="cleanModelPort" lower="0" upper="-1" service="//@services.7" role="server"/>
+  </types>
+</art:System>

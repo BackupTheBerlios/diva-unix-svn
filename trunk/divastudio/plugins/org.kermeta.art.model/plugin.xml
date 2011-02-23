@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+ <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://art" 
+       class = "art.ArtPackage"
+       genModel = "model/metamodel@runtime.genmodel" /> 
+  </extension>
+
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://art/instance" 
+       class = "art.instance.InstancePackage"
+       genModel = "model/metamodel@runtime.genmodel" /> 
+  </extension>
+
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://art/type" 
+       class = "art.type.TypePackage"
+       genModel = "model/metamodel@runtime.genmodel" /> 
+  </extension>
+  
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package 
+       uri = "http://art/implem" 
+       class = "art.implem.ImplemPackage"
+       genModel = "model/metamodel@runtime.genmodel" /> 
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package
+           class="art.group.GroupPackage"
+           genModel="model/metamodel@runtime.genmodel"
+           uri="http://art/group">
+    </package>
+  </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://SmartAdapters4ART"
+            class="smartadapters4ART.Smartadapters4ARTPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://SmartAdapters4ART/adaptations"
+            class="smartadapters4ART.adaptations.AdaptationsPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art_relaxed"
+            class="art_relaxed.Art_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art/instance_relaxed"
+            class="art_relaxed.instance_relaxed.Instance_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art/type_relaxed"
+            class="art_relaxed.type_relaxed.Type_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art/implem_relaxed"
+            class="art_relaxed.implem_relaxed.Implem_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art/group_relaxed"
+            class="art_relaxed.group_relaxed.Group_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://art/distrib_relaxed"
+            class="art_relaxed.distrib_relaxed.Distrib_relaxedPackage"
+            genModel="model/aom/art_AOM_Framework.genmodel"/>
+   </extension>
+
+</plugin>

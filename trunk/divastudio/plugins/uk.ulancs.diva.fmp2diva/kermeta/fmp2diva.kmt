@@ -1,0 +1,63 @@
+/* $Id:$ 
+ * Creation : September 22, 2009
+ * Licence  : EPL 
+ * Copyright:
+ * Authors  : 
+ *            dvojtise
+ */
+@mainClass "fmp2diva::FMP2DiVA"
+@mainOperation "testMain"
+
+
+package fmp2diva;
+
+
+require kermeta
+require "platform:/lookup/ca.uwaterloo.gp.fmp/src/fmp.ecore"
+require "platform:/lookup/diva.model/model/DiVA_Merged.ecore"
+require "fmp2diva_pass1.kmt"
+
+using kermeta::standard
+using kermeta::persistence
+using fmp
+using diva
+
+class FMP2DiVA
+{
+	operation main(inputFileName : String) is do
+	end
+	
+	
+	operation testMain() : Void is do 
+		stdio.writeln("Let's start")
+		var fmpModel : Project init loadFMPModel("platform:/resource/eu.ict_diva.studies/CAS/requirement/refined_output/sences1and2_CAS.fmp")
+		var divaModel : VariabilityModel init transformFMP2DiVA(fmpModel)
+		saveDiVAModel(divaModel, "platform:/resource/eu.ict_diva.studies/CAS/requirement/refined_output/sences1and2_CAS.diva.xmi")
+		stdio.writeln("That's all folks!")
+	end
+	
+	operation transformFMP2DiVA(fmpProject : Project) : VariabilityModel is do 
+		result := fmpProject.fmp2diva_pass1
+	end
+	
+	
+	operation loadFMPModel(inputFileName : String) : Project is do
+		var repository : EMFRepository init EMFRepository.new
+   		repository.registerEcoreFile("platform:/plugin/ca.uwaterloo.gp.fmp/src/fmp.ecore")             
+   		var resource : Resource init repository.createResource(inputFileName,
+   															   "platform:/plugin/ca.uwaterloo.gp.fmp/src/fmp.ecore")
+   		resource.load()
+   		result ?= resource.one
+	end
+	
+	
+	operation saveDiVAModel(variabilityModel : VariabilityModel, outputFileName : String) is do
+		var repository : EMFRepository init EMFRepository.new
+   		repository.registerEcoreFile("platform:/resource/diva.model/model/DiVA_Merged.ecore")             
+   		var resource : Resource init repository.createResource(outputFileName,
+   															   "platform:/resource/diva.model/model/DiVA_Merged.ecore")
+   		resource.add(variabilityModel)
+   		resource.save
+	end
+	
+}

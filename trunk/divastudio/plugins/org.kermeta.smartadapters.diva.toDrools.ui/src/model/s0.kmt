@@ -1,0 +1,6267 @@
+
+/* $Id:$ 
+ * Creation : February 9, 2010
+ * Licence  : EPL 
+ * Copyright:
+ * Authors  : 
+ *            barais
+ */
+
+package art_relaxed;
+
+
+require kermeta
+require "platform:/lookup/org.kermeta.art.model/model/aom/art_AOM_Framework.ecore"
+
+using kermeta::standard
+using kermeta::persistence
+
+class Context{
+	reference res : kermeta::utils::StringBuffer
+	reference cache : kermeta::utils::Hashtable<Object,String>
+		
+	reference lastgenerateName : String
+	reference i : Integer
+	
+	operation getGenerateName(obj:Object):String is do
+		var res : String
+	
+		res := cache.getValue(obj)
+		if res == void then
+			var metaClass : kermeta::language::structure::Class init obj.getMetaClass
+			var prop : kermeta::language::structure::Property init metaClass.classDefinition.allAttribute.select{p | p.name == "pid"}.one
+			
+			if prop != void then
+				res := obj.get(prop).asType(String)
+			end
+			
+			if res == void then
+				if (i.isVoid) then i:= 0 end
+				res :="s"+ i.toString()
+				i:=i+1	
+			end	
+			res := res.replace("_", "__").replace(".", "_")
+			lastgenerateName := res
+		end
+		result := res
+	end
+	
+	operation convert(val : String) : String is 
+	do 
+		result := " == "+"\""+val+"\""
+		if val.contains("*") then
+			result := " matches "+"\""+val.replace("*",".*")+"\""
+		end
+	end
+}
+
+aspect class AspectModelElement {
+	operation pointcut2droolsPass1(ctx:Context):Void is 
+		abstract 
+		
+	operation pointcut2droolsPass2(ctx:Context):Void is 
+		abstract
+
+	operation  pass1create(ctx:Context):Void is
+		abstract
+		
+	operation  pass2set(ctx:Context):Void is
+		abstract	
+	
+	operation generateGlobalStrategy(ctx:Context) is
+		abstract
+		
+	operation generatePerElementStrategy(ctx:Context, ids:Set<String>) is
+		abstract
+		
+	operation generatePerRoleStrategy(ctx:Context, ids:Set<String>) is
+		abstract
+	
+	operation generateDeclare(ctx:Context):Void is
+		abstract
+		
+	operation generatePerJoinPointStrategy(ctx:Context):Void is
+		abstract					
+}
+package instance_relaxed {
+aspect class ComponentInstance {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.ComponentInstance(")
+		ctx.res.append(")\n")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.ComponentInstance(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.ComponentInstance" +" "+ na +  " = null;
+")	
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.ComponentInstance) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createComponentInstance();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.ComponentInstance) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createComponentInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.ComponentInstance) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createComponentInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createComponentInstance();
+")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class PrimitiveInstance {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.state.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"State"+"(\""+self.state.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+	if (not self.type.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Type"+"("+ctx.cache.getValue(self.type)+");
+")	
+	end
+	if (not self.superComponent.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"SuperComponent"+"("+ctx.cache.getValue(self.superComponent)+");
+")	
+	end
+
+	self.~attribute.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Attribute"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.binding.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Binding"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.implem.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Implem"+"("+ctx.cache.getValue(self.implem)+");
+")	
+	end
+
+	self.groups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Groups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pass2set(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pass2set(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pass2set(ctx)
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.PrimitiveInstance(")
+			if (not self.state.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("state".replace("~","")+ctx.convert(self.state.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.PrimitiveInstance(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.type.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("type".replace("~","")+" == "+ctx.cache.getValue(self.type)+"Decl")
+	end
+	if (not self.superComponent.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("superComponent".replace("~","")+" == "+ctx.cache.getValue(self.superComponent)+"Decl")
+	end
+	if (self.~attribute.size > 0) then
+		self.~attribute.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~attribute".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.binding.size > 0) then
+		self.binding.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("binding".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.implem.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("implem".replace("~","")+" == "+ctx.cache.getValue(self.implem)+"Decl")
+	end
+	if (self.groups.size > 0) then
+		self.groups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("groups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.PrimitiveInstance" +" "+ na +  " = null;
+")	
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.PrimitiveInstance) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createPrimitiveInstance();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.PrimitiveInstance) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createPrimitiveInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.PrimitiveInstance) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createPrimitiveInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createPrimitiveInstance();
+")
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class CompositeInstance {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.state.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"State"+"(\""+self.state.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.subComponent.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"SubComponent"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.delegation.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Delegation"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.type.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Type"+"("+ctx.cache.getValue(self.type)+");
+")	
+	end
+	if (not self.superComponent.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"SuperComponent"+"("+ctx.cache.getValue(self.superComponent)+");
+")	
+	end
+
+	self.~attribute.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Attribute"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.binding.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Binding"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.implem.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Implem"+"("+ctx.cache.getValue(self.implem)+");
+")	
+	end
+
+	self.groups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Groups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.subComponent.size >0 then
+
+	self.subComponent.each{c|c.pass2set(ctx)}
+end
+
+if self.delegation.size >0 then
+
+	self.delegation.each{c|c.pass2set(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pass2set(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pass2set(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pass2set(ctx)
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.CompositeInstance(")
+			if (not self.state.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("state".replace("~","")+ctx.convert(self.state.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.subComponent.size >0 then
+
+	self.subComponent.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.delegation.size >0 then
+
+	self.delegation.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.CompositeInstance(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.subComponent.size > 0) then
+		self.subComponent.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("subComponent".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.delegation.size > 0) then
+		self.delegation.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("delegation".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.type.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("type".replace("~","")+" == "+ctx.cache.getValue(self.type)+"Decl")
+	end
+	if (not self.superComponent.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("superComponent".replace("~","")+" == "+ctx.cache.getValue(self.superComponent)+"Decl")
+	end
+	if (self.~attribute.size > 0) then
+		self.~attribute.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~attribute".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.binding.size > 0) then
+		self.binding.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("binding".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.implem.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("implem".replace("~","")+" == "+ctx.cache.getValue(self.implem)+"Decl")
+	end
+	if (self.groups.size > 0) then
+		self.groups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("groups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.subComponent.size >0 then
+
+	self.subComponent.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.delegation.size >0 then
+
+	self.delegation.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.CompositeInstance" +" "+ na +  " = null;
+")	
+if self.subComponent.size >0 then
+
+	self.subComponent.each{c|c.generateDeclare(ctx)}
+end
+
+if self.delegation.size >0 then
+
+	self.delegation.each{c|c.generateDeclare(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.CompositeInstance) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createCompositeInstance();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.CompositeInstance) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createCompositeInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.CompositeInstance) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createCompositeInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createCompositeInstance();
+")
+
+if self.subComponent.size >0 then
+
+	self.subComponent.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.delegation.size >0 then
+
+	self.delegation.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.binding.size >0 then
+
+	self.binding.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class Binding {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.Binding(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.Binding(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.Binding" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.Binding) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createBinding();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.Binding) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.Binding) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createBinding();
+")
+end
+
+}aspect class TransmissionBinding {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.id.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Id"+"(\""+self.id.toString+"\");
+")	
+	end
+	if (not self.client.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Client"+"("+ctx.cache.getValue(self.client)+");
+")	
+	end
+	if (not self.server.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Server"+"("+ctx.cache.getValue(self.server)+");
+")	
+	end
+	if (not self.serverInstance.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ServerInstance"+"("+ctx.cache.getValue(self.serverInstance)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.TransmissionBinding(")
+			if (not self.id.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("id".replace("~","")+ctx.convert(self.id.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.TransmissionBinding(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.client.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("client".replace("~","")+" == "+ctx.cache.getValue(self.client)+"Decl")
+	end
+	if (not self.server.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("server".replace("~","")+" == "+ctx.cache.getValue(self.server)+"Decl")
+	end
+	if (not self.serverInstance.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("serverInstance".replace("~","")+" == "+ctx.cache.getValue(self.serverInstance)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.TransmissionBinding" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.TransmissionBinding) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createTransmissionBinding();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.TransmissionBinding) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createTransmissionBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.TransmissionBinding) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createTransmissionBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createTransmissionBinding();
+")
+end
+
+}aspect class DelegationBinding {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.id.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Id"+"(\""+self.id.toString+"\");
+")	
+	end
+	if (not self.source.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Source"+"("+ctx.cache.getValue(self.source)+");
+")	
+	end
+	if (not self.exported.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Exported"+"("+ctx.cache.getValue(self.exported)+");
+")	
+	end
+	if (not self.serverInstance.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ServerInstance"+"("+ctx.cache.getValue(self.serverInstance)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.DelegationBinding(")
+			if (not self.id.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("id".replace("~","")+ctx.convert(self.id.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.DelegationBinding(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.source.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("source".replace("~","")+" == "+ctx.cache.getValue(self.source)+"Decl")
+	end
+	if (not self.exported.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("exported".replace("~","")+" == "+ctx.cache.getValue(self.exported)+"Decl")
+	end
+	if (not self.serverInstance.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("serverInstance".replace("~","")+" == "+ctx.cache.getValue(self.serverInstance)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.DelegationBinding" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DelegationBinding) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDelegationBinding();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DelegationBinding) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDelegationBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.DelegationBinding) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDelegationBinding();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDelegationBinding();
+")
+end
+
+}aspect class AttributeInstance {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.AttributeInstance(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.AttributeInstance(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.AttributeInstance" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.AttributeInstance) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createAttributeInstance();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.AttributeInstance) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createAttributeInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.AttributeInstance) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createAttributeInstance();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createAttributeInstance();
+")
+end
+
+}aspect class ValuedAttribute {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.~value.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Value"+"(\""+self.~value.toString+"\");
+")	
+	end
+	if (not self.~attribute.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Attribute"+"("+ctx.cache.getValue(self.~attribute)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.ValuedAttribute(")
+			if (not self.~value.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("~value".replace("~","")+ctx.convert(self.~value.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.ValuedAttribute(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.~attribute.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("~attribute".replace("~","")+" == "+ctx.cache.getValue(self.~attribute)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.ValuedAttribute" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.ValuedAttribute) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createValuedAttribute();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.ValuedAttribute) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createValuedAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.ValuedAttribute) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createValuedAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createValuedAttribute();
+")
+end
+
+}aspect class DictionaryValuedAttribute {
+method  pass2set(ctx:Context):Void is do 
+ 	
+	self.entries.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Entries"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.~attribute.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Attribute"+"("+ctx.cache.getValue(self.~attribute)+");
+")	
+	end
+
+if self.entries.size >0 then
+
+	self.entries.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.DictionaryValuedAttribute(")
+		ctx.res.append(")\n")
+
+if self.entries.size >0 then
+
+	self.entries.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.DictionaryValuedAttribute(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.entries.size > 0) then
+		self.entries.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("entries".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.~attribute.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("~attribute".replace("~","")+" == "+ctx.cache.getValue(self.~attribute)+"Decl")
+	end
+ctx.res.append(")\n")
+
+if self.entries.size >0 then
+
+	self.entries.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.DictionaryValuedAttribute" +" "+ na +  " = null;
+")	
+if self.entries.size >0 then
+
+	self.entries.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DictionaryValuedAttribute) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDictionaryValuedAttribute();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DictionaryValuedAttribute) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDictionaryValuedAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.DictionaryValuedAttribute) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDictionaryValuedAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDictionaryValuedAttribute();
+")
+
+if self.entries.size >0 then
+
+	self.entries.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class Entry {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.Entry(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.Entry(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.Entry" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.Entry) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createEntry();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.Entry) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.Entry) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createEntry();
+")
+end
+
+}aspect class DefaultEntry {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.~value.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Value"+"(\""+self.~value.toString+"\");
+")	
+	end
+	if (not self.key.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Key"+"("+ctx.cache.getValue(self.key)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.DefaultEntry(")
+			if (not self.~value.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("~value".replace("~","")+ctx.convert(self.~value.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.DefaultEntry(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.key.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("key".replace("~","")+" == "+ctx.cache.getValue(self.key)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.DefaultEntry" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DefaultEntry) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDefaultEntry();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.DefaultEntry) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDefaultEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.DefaultEntry) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDefaultEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createDefaultEntry();
+")
+end
+
+}aspect class OtherEntry {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.key.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Key"+"(\""+self.key.toString+"\");
+")	
+	end
+	if (not self.~value.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Value"+"(\""+self.~value.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.instance.OtherEntry(")
+			if (not self.key.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("key".replace("~","")+ctx.convert(self.key.toString))
+		i := i+1	
+	end
+	if (not self.~value.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("~value".replace("~","")+ctx.convert(self.~value.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.instance.OtherEntry(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.instance.OtherEntry" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.OtherEntry) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createOtherEntry();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.instance.OtherEntry) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createOtherEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.instance.OtherEntry) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createOtherEntry();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.instance.InstanceFactory.eINSTANCE.createOtherEntry();
+")
+end
+
+}}
+package type_relaxed {
+aspect class ComponentType {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.ComponentType(")
+		ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.ComponentType(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.ComponentType" +" "+ na +  " = null;
+")	
+if self.port.size >0 then
+
+	self.port.each{c|c.generateDeclare(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.ComponentType) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createComponentType();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.ComponentType) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createComponentType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.ComponentType) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createComponentType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createComponentType();
+")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class PrimitiveType {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.port.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Port"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.~attribute.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Attribute"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.groups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Groups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.implem.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Implem"+"("+ctx.cache.getValue(self.implem)+");
+")	
+	end
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pass2set(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pass2set(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pass2set(ctx)
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.PrimitiveType(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.PrimitiveType(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.port.size > 0) then
+		self.port.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("port".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.~attribute.size > 0) then
+		self.~attribute.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~attribute".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.groups.size > 0) then
+		self.groups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("groups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.implem.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("implem".replace("~","")+" == "+ctx.cache.getValue(self.implem)+"Decl")
+	end
+ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.PrimitiveType" +" "+ na +  " = null;
+")	
+if self.port.size >0 then
+
+	self.port.each{c|c.generateDeclare(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PrimitiveType) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPrimitiveType();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PrimitiveType) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPrimitiveType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.PrimitiveType) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPrimitiveType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPrimitiveType();
+")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class CompositeType {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.port.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Port"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.~attribute.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Attribute"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.groups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Groups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.implem.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Implem"+"("+ctx.cache.getValue(self.implem)+");
+")	
+	end
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pass2set(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pass2set(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pass2set(ctx)
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.CompositeType(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass1(ctx)
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.CompositeType(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.port.size > 0) then
+		self.port.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("port".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.~attribute.size > 0) then
+		self.~attribute.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~attribute".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.groups.size > 0) then
+		self.groups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("groups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.implem.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("implem".replace("~","")+" == "+ctx.cache.getValue(self.implem)+"Decl")
+	end
+ctx.res.append(")\n")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.pointcut2droolsPass2(ctx)
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.CompositeType" +" "+ na +  " = null;
+")	
+if self.port.size >0 then
+
+	self.port.each{c|c.generateDeclare(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generateDeclare(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generateDeclare(ctx)
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.CompositeType) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createCompositeType();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.CompositeType) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createCompositeType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.CompositeType) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createCompositeType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createCompositeType();
+")
+
+if self.port.size >0 then
+
+	self.port.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.~attribute.size >0 then
+
+	self.~attribute.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if not self.implem.isVoid then
+
+	self.implem.generatePerJoinPointStrategy(ctx)
+end
+end
+
+}aspect class Service {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Service(")
+		ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Service(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Service" +" "+ na +  " = null;
+")	
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Service) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createService();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Service) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Service) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createService();
+")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class Operation {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.input.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Input"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.output.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Output"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.input.size >0 then
+
+	self.input.each{c|c.pass2set(ctx)}
+end
+
+if self.output.size >0 then
+
+	self.output.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Operation(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.input.size >0 then
+
+	self.input.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.output.size >0 then
+
+	self.output.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Operation(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.input.size > 0) then
+		self.input.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("input".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.output.size > 0) then
+		self.output.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("output".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.input.size >0 then
+
+	self.input.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.output.size >0 then
+
+	self.output.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Operation" +" "+ na +  " = null;
+")	
+if self.input.size >0 then
+
+	self.input.each{c|c.generateDeclare(ctx)}
+end
+
+if self.output.size >0 then
+
+	self.output.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Operation) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createOperation();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Operation) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createOperation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Operation) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createOperation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createOperation();
+")
+
+if self.input.size >0 then
+
+	self.input.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.output.size >0 then
+
+	self.output.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class Parameter {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+	if (not self.type.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Type"+"("+ctx.cache.getValue(self.type)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Parameter(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Parameter(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.type.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("type".replace("~","")+" == "+ctx.cache.getValue(self.type)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Parameter" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Parameter) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createParameter();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Parameter) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createParameter();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Parameter) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createParameter();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createParameter();
+")
+end
+
+}aspect class FunctionalService {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.~operation.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Operation"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.FunctionalService(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.FunctionalService(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.~operation.size > 0) then
+		self.~operation.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~operation".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.FunctionalService" +" "+ na +  " = null;
+")	
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.FunctionalService) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createFunctionalService();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.FunctionalService) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createFunctionalService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.FunctionalService) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createFunctionalService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createFunctionalService();
+")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class ControlService {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.~operation.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Operation"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.ControlService(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.ControlService(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.~operation.size > 0) then
+		self.~operation.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("~operation".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.ControlService" +" "+ na +  " = null;
+")	
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.ControlService) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createControlService();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.ControlService) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createControlService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.ControlService) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createControlService();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createControlService();
+")
+
+if self.~operation.size >0 then
+
+	self.~operation.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class AbstractPort {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.AbstractPort(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.AbstractPort(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.AbstractPort" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.AbstractPort) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAbstractPort();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.AbstractPort) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAbstractPort();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.AbstractPort) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAbstractPort();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAbstractPort();
+")
+end
+
+}aspect class Port {
+method  pass2set(ctx:Context):Void from CardinalityElement is do 
+ 		if (not self.lower.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Lower"+"("+self.lower.toString+");
+")	
+	end
+	if (not self.upper.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Upper"+"("+self.upper.toString+");
+")	
+	end
+	if (not self.role.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Role"+"(\""+self.role.toString+"\");
+")	
+	end
+	if (not self.protocol.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Protocol"+"(\""+self.protocol.toString+"\");
+")	
+	end
+	if (not self.uri.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Uri"+"(\""+self.uri.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+	if (not self.service.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Service"+"("+ctx.cache.getValue(self.service)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void from CardinalityElement is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Port(")
+			if (not self.lower.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("lower".replace("~","")+" == "+self.lower.toString)
+		i := i+1	
+	end
+	if (not self.upper.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("upper".replace("~","")+" == "+self.upper.toString)
+		i := i+1	
+	end
+	if (not self.role.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("role".replace("~","")+ctx.convert(self.role.toString))
+		i := i+1	
+	end
+	if (not self.protocol.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("protocol".replace("~","")+ctx.convert(self.protocol.toString))
+		i := i+1	
+	end
+	if (not self.uri.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("uri".replace("~","")+ctx.convert(self.uri.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void from CardinalityElement is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Port(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.service.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("service".replace("~","")+" == "+ctx.cache.getValue(self.service)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void from CardinalityElement is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Port" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void from CardinalityElement is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Port) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPort();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void from CardinalityElement is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Port) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPort();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void from CardinalityElement is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Port) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPort();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void from CardinalityElement is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPort();
+")
+end
+
+}aspect class PortCollection {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.role.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Role"+"(\""+self.role.toString+"\");
+")	
+	end
+	if (not self.protocol.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Protocol"+"(\""+self.protocol.toString+"\");
+")	
+	end
+	if (not self.uri.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Uri"+"(\""+self.uri.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.ids.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Ids"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.service.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Service"+"("+ctx.cache.getValue(self.service)+");
+")	
+	end
+
+if self.ids.size >0 then
+
+	self.ids.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.PortCollection(")
+			if (not self.role.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("role".replace("~","")+ctx.convert(self.role.toString))
+		i := i+1	
+	end
+	if (not self.protocol.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("protocol".replace("~","")+ctx.convert(self.protocol.toString))
+		i := i+1	
+	end
+	if (not self.uri.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("uri".replace("~","")+ctx.convert(self.uri.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.ids.size >0 then
+
+	self.ids.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.PortCollection(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.ids.size > 0) then
+		self.ids.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("ids".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.service.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("service".replace("~","")+" == "+ctx.cache.getValue(self.service)+"Decl")
+	end
+ctx.res.append(")\n")
+
+if self.ids.size >0 then
+
+	self.ids.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.PortCollection" +" "+ na +  " = null;
+")	
+if self.ids.size >0 then
+
+	self.ids.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PortCollection) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortCollection();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PortCollection) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortCollection();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.PortCollection) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortCollection();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortCollection();
+")
+
+if self.ids.size >0 then
+
+	self.ids.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class PortId {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.PortId(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.PortId(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.PortId" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PortId) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortId();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.PortId) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortId();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.PortId) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortId();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createPortId();
+")
+end
+
+}aspect class Attribute {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Attribute(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Attribute(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Attribute" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Attribute) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAttribute();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Attribute) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Attribute) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createAttribute();
+")
+end
+
+}aspect class BasicAttribute {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.defaultValue.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"DefaultValue"+"(\""+self.defaultValue.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+	if (not self.type.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Type"+"("+ctx.cache.getValue(self.type)+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.BasicAttribute(")
+			if (not self.defaultValue.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("defaultValue".replace("~","")+ctx.convert(self.defaultValue.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.BasicAttribute(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.type.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("type".replace("~","")+" == "+ctx.cache.getValue(self.type)+"Decl")
+	end
+ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.BasicAttribute" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.BasicAttribute) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createBasicAttribute();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.BasicAttribute) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createBasicAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.BasicAttribute) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createBasicAttribute();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createBasicAttribute();
+")
+end
+
+}aspect class Dictionary {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+	if (not self.~valueType.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ValueType"+"("+ctx.cache.getValue(self.~valueType)+");
+")	
+	end
+
+	self.keys.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Keys"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+	if (not self.type.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Type"+"("+ctx.cache.getValue(self.type)+");
+")	
+	end
+
+if self.keys.size >0 then
+
+	self.keys.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.Dictionary(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.keys.size >0 then
+
+	self.keys.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.Dictionary(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (not self.~valueType.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("~valueType".replace("~","")+" == "+ctx.cache.getValue(self.~valueType)+"Decl")
+	end
+	if (self.keys.size > 0) then
+		self.keys.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("keys".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (not self.type.isVoid()) then
+		ctx.res.append(", ")
+		ctx.res.append("type".replace("~","")+" == "+ctx.cache.getValue(self.type)+"Decl")
+	end
+ctx.res.append(")\n")
+
+if self.keys.size >0 then
+
+	self.keys.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.Dictionary" +" "+ na +  " = null;
+")	
+if self.keys.size >0 then
+
+	self.keys.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Dictionary) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionary();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.Dictionary) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionary();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.Dictionary) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionary();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionary();
+")
+
+if self.keys.size >0 then
+
+	self.keys.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class DictionaryDefaultValue {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.key.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Key"+"(\""+self.key.toString+"\");
+")	
+	end
+	if (not self.~value.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Value"+"(\""+self.~value.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.type.DictionaryDefaultValue(")
+			if (not self.key.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("key".replace("~","")+ctx.convert(self.key.toString))
+		i := i+1	
+	end
+	if (not self.~value.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("~value".replace("~","")+ctx.convert(self.~value.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.type.DictionaryDefaultValue(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.type.DictionaryDefaultValue" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.DictionaryDefaultValue) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionaryDefaultValue();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.type.DictionaryDefaultValue) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionaryDefaultValue();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.type.DictionaryDefaultValue) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionaryDefaultValue();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.type.TypeFactory.eINSTANCE.createDictionaryDefaultValue();
+")
+end
+
+}}
+package implem_relaxed {
+aspect class ComponentImplementation {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.implem.ComponentImplementation(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.implem.ComponentImplementation(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.implem.ComponentImplementation" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.ComponentImplementation) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createComponentImplementation();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.ComponentImplementation) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createComponentImplementation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.implem.ComponentImplementation) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createComponentImplementation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createComponentImplementation();
+")
+end
+
+}aspect class FractalComponent {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.controllerDesc.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ControllerDesc"+"(\""+self.controllerDesc.toString+"\");
+")	
+	end
+	if (not self.contentDesc.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ContentDesc"+"(\""+self.contentDesc.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.implem.FractalComponent(")
+			if (not self.controllerDesc.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("controllerDesc".replace("~","")+ctx.convert(self.controllerDesc.toString))
+		i := i+1	
+	end
+	if (not self.contentDesc.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("contentDesc".replace("~","")+ctx.convert(self.contentDesc.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.implem.FractalComponent(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.implem.FractalComponent" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.FractalComponent) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createFractalComponent();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.FractalComponent) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createFractalComponent();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.implem.FractalComponent) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createFractalComponent();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createFractalComponent();
+")
+end
+
+}aspect class OSGiComponent {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.implementingClass.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"ImplementingClass"+"(\""+self.implementingClass.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.implem.OSGiComponent(")
+			if (not self.implementingClass.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("implementingClass".replace("~","")+ctx.convert(self.implementingClass.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.implem.OSGiComponent(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.implem.OSGiComponent" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.OSGiComponent) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiComponent();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.OSGiComponent) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiComponent();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.implem.OSGiComponent) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiComponent();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiComponent();
+")
+end
+
+}aspect class TypeImplementation {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.implem.TypeImplementation(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.implem.TypeImplementation(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.implem.TypeImplementation" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.TypeImplementation) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createTypeImplementation();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.TypeImplementation) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createTypeImplementation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.implem.TypeImplementation) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createTypeImplementation();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createTypeImplementation();
+")
+end
+
+}aspect class OSGiType {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.generateInstanceBundle.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"GenerateInstanceBundle"+"("+self.generateInstanceBundle.toString+");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.implem.OSGiType(")
+			if (not self.generateInstanceBundle.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("generateInstanceBundle".replace("~","")+" == "+self.generateInstanceBundle.toString)
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.implem.OSGiType(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.implem.OSGiType" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.OSGiType) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiType();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.implem.OSGiType) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.implem.OSGiType) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.implem.ImplemFactory.eINSTANCE.createOSGiType();
+")
+end
+
+}}
+package group_relaxed {
+aspect class Group {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.group.Group(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.group.Group(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.group.Group" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.Group) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createGroup();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.Group) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.group.Group) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createGroup();
+")
+end
+
+}aspect class TypeGroup {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.types.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Types"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.subGroups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"SubGroups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.group.TypeGroup(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.group.TypeGroup(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.types.size > 0) then
+		self.types.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("types".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.subGroups.size > 0) then
+		self.subGroups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("subGroups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.group.TypeGroup" +" "+ na +  " = null;
+")	
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.TypeGroup) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createTypeGroup();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.TypeGroup) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createTypeGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.group.TypeGroup) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createTypeGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createTypeGroup();
+")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class InstanceGroup {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.instances.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Instances"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.subGroups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"SubGroups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.group.InstanceGroup(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.group.InstanceGroup(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.instances.size > 0) then
+		self.instances.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("instances".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.subGroups.size > 0) then
+		self.subGroups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("subGroups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.group.InstanceGroup" +" "+ na +  " = null;
+")	
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.InstanceGroup) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createInstanceGroup();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.group.InstanceGroup) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createInstanceGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.group.InstanceGroup) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createInstanceGroup();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.group.GroupFactory.eINSTANCE.createInstanceGroup();
+")
+
+if self.subGroups.size >0 then
+
+	self.subGroups.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}}
+package distrib_relaxed {
+aspect class Node {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.uri.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Uri"+"(\""+self.uri.toString+"\");
+")	
+	end
+	if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.components.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Components"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.components.size >0 then
+
+	self.components.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.distrib.Node(")
+			if (not self.uri.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("uri".replace("~","")+ctx.convert(self.uri.toString))
+		i := i+1	
+	end
+	if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.components.size >0 then
+
+	self.components.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.distrib.Node(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.components.size > 0) then
+		self.components.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("components".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.components.size >0 then
+
+	self.components.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.distrib.Node" +" "+ na +  " = null;
+")	
+if self.components.size >0 then
+
+	self.components.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.distrib.Node) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.distrib.DistribFactory.eINSTANCE.createNode();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.distrib.Node) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.distrib.DistribFactory.eINSTANCE.createNode();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.distrib.Node) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.distrib.DistribFactory.eINSTANCE.createNode();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.distrib.DistribFactory.eINSTANCE.createNode();
+")
+
+if self.components.size >0 then
+
+	self.components.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}}
+aspect class NamedElement {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.NamedElement(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.NamedElement(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.NamedElement" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.NamedElement) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createNamedElement();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.NamedElement) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createNamedElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.NamedElement) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createNamedElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createNamedElement();
+")
+end
+
+}aspect class ModelElement {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.ModelElement(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.ModelElement(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.ModelElement" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.ModelElement) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createModelElement();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.ModelElement) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createModelElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.ModelElement) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createModelElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createModelElement();
+")
+end
+
+}aspect class System {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+
+	self.nodes.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Nodes"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.services.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Services"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.types.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Types"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.dataTypes.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"DataTypes"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+	self.groups.each{c|
+	ctx.res.append(ctx.cache.getValue(self) + ".get"+"Groups"+"().add("+ctx.cache.getValue(c)+");
+")	
+	}	
+
+
+
+if self.nodes.size >0 then
+
+	self.nodes.each{c|c.pass2set(ctx)}
+end
+
+if self.services.size >0 then
+
+	self.services.each{c|c.pass2set(ctx)}
+end
+
+if self.types.size >0 then
+
+	self.types.each{c|c.pass2set(ctx)}
+end
+
+if self.dataTypes.size >0 then
+
+	self.dataTypes.each{c|c.pass2set(ctx)}
+end
+
+if self.groups.size >0 then
+
+	self.groups.each{c|c.pass2set(ctx)}
+end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.System(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+
+if self.nodes.size >0 then
+
+	self.nodes.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.services.size >0 then
+
+	self.services.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.types.size >0 then
+
+	self.types.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.dataTypes.size >0 then
+
+	self.dataTypes.each{c|c.pointcut2droolsPass1(ctx)}
+end
+
+if self.groups.size >0 then
+
+	self.groups.each{c|c.pointcut2droolsPass1(ctx)}
+end
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.System(")
+		ctx.res.append("this == "+varName+"Decl")
+			if (self.nodes.size > 0) then
+		self.nodes.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("nodes".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.services.size > 0) then
+		self.services.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("services".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.types.size > 0) then
+		self.types.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("types".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.dataTypes.size > 0) then
+		self.dataTypes.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("dataTypes".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+	if (self.groups.size > 0) then
+		self.groups.each{o |
+			ctx.res.append(", ")
+			ctx.res.append("groups".replace("~","")+" contains "+ctx.cache.getValue(o)+"Decl")
+		}
+	end
+ctx.res.append(")\n")
+
+if self.nodes.size >0 then
+
+	self.nodes.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.services.size >0 then
+
+	self.services.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.types.size >0 then
+
+	self.types.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.dataTypes.size >0 then
+
+	self.dataTypes.each{c|c.pointcut2droolsPass2(ctx)}
+end
+
+if self.groups.size >0 then
+
+	self.groups.each{c|c.pointcut2droolsPass2(ctx)}
+end
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.System" +" "+ na +  " = null;
+")	
+if self.nodes.size >0 then
+
+	self.nodes.each{c|c.generateDeclare(ctx)}
+end
+
+if self.services.size >0 then
+
+	self.services.each{c|c.generateDeclare(ctx)}
+end
+
+if self.types.size >0 then
+
+	self.types.each{c|c.generateDeclare(ctx)}
+end
+
+if self.dataTypes.size >0 then
+
+	self.dataTypes.each{c|c.generateDeclare(ctx)}
+end
+
+if self.groups.size >0 then
+
+	self.groups.each{c|c.generateDeclare(ctx)}
+end
+end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.System) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createSystem();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.System) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createSystem();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.System) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createSystem();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createSystem();
+")
+
+if self.nodes.size >0 then
+
+	self.nodes.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.services.size >0 then
+
+	self.services.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.types.size >0 then
+
+	self.types.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.dataTypes.size >0 then
+
+	self.dataTypes.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+
+if self.groups.size >0 then
+
+	self.groups.each{c|c.generatePerJoinPointStrategy(ctx)}
+end
+end
+
+}aspect class DataType {
+method  pass2set(ctx:Context):Void is do 
+ 		if (not self.name.isVoid()) then
+		ctx.res.append(ctx.cache.getValue(self) + ".set"+"Name"+"(\""+self.name.toString+"\");
+")	
+	end
+end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.DataType(")
+			if (not self.name.isVoid()) then
+		if i > 0 then
+			ctx.res.append(", ")
+		end
+		ctx.res.append("name".replace("~","")+ctx.convert(self.name.toString))
+		i := i+1	
+	end
+ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.DataType(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.DataType" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.DataType) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createDataType();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.DataType) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createDataType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.DataType) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createDataType();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createDataType();
+")
+end
+
+}aspect class TypedElement {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.TypedElement(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.TypedElement(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.TypedElement" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.TypedElement) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createTypedElement();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.TypedElement) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createTypedElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.TypedElement) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createTypedElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createTypedElement();
+")
+end
+
+}aspect class CardinalityElement {
+method  pass2set(ctx:Context):Void is do 
+ 	end
+	method pointcut2droolsPass1(ctx:Context):Void is do 
+		var i : Integer init 0
+		var varName : String init ctx.getGenerateName(self)
+		ctx.cache.put(self,"$"+varName)
+		ctx.res.append("$"+varName+"Decl: "+"art.CardinalityElement(")
+		ctx.res.append(")\n")
+	end
+method  pointcut2droolsPass2(ctx:Context):Void is do 
+ 			var varName : String init ctx.cache.getValue(self)
+		ctx.res.append(varName+": art.CardinalityElement(")
+		ctx.res.append("this == "+varName+"Decl")
+		ctx.res.append(")\n")
+end
+method  generateDeclare(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+	ctx.res.append("art.CardinalityElement" +" "+ na +  " = null;
+")	end
+method  generateGlobalStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.CardinalityElement) uniqueobjects.get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createCardinalityElement();
+")
+	ctx.res.append("	uniqueobjects.put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerElementStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Set<Object> "+scopeName+" = new java.util.HashSet<Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".add("+id+");
+")
+	}
+			
+	ctx.res.append("if (perElem.get("+scopeName+") == null){
+")
+	ctx.res.append("	perElem.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)
+	ctx.res.append(na +  " = (art.CardinalityElement) ((java.util.Map<String, Object>) perElem.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createCardinalityElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>)perElem.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")	
+	end
+method  generatePerRoleStrategy(ctx:Context, baseIDs:Set<String>):Void is do 
+ 		var scopeName : String init "scope_"+ctx.getGenerateName(self)
+	ctx.res.append("java.util.Map<String, Object> "+scopeName+" = new java.util.HashMap<String, Object>();
+")
+	baseIDs.each{id | 
+		ctx.res.append(scopeName+".put(\""+id+"\", "+id+");
+")
+	}
+			
+	ctx.res.append("if (perRole.get("+scopeName+") == null){
+")
+	ctx.res.append("	perRole.put("+scopeName+", new java.util.HashMap<String, Object>());
+")
+	ctx.res.append("}
+")
+
+	var na : String init ctx.cache.getValue(self)				
+	ctx.res.append(na +  " = (art.CardinalityElement) ((java.util.Map<String, Object>) perRole.get("+scopeName+")).get(\""+na+"\");
+")
+	ctx.res.append("if ("+" "+ na + " " + "== null){
+")
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createCardinalityElement();
+")
+	ctx.res.append("	((java.util.Map<String, Object>) perRole.get("+scopeName+")).put(\""+na+"\","+ na+");
+")
+	ctx.res.append("}
+")
+	end
+method  generatePerJoinPointStrategy(ctx:Context):Void is do 
+ 		var na : String init ctx.getGenerateName(self)
+ 	ctx.cache.put(self,na)
+ 	ctx.res.append("if ("+na+" == null)
+")	
+	ctx.res.append("	"+na +  " = art.ArtFactory.eINSTANCE.createCardinalityElement();
+")
+end
+
+}

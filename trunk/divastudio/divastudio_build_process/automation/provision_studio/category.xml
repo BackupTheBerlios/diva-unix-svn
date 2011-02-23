@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/eu.ict_diva.studio.main.feature_1.0.0.qualifier.jar" id="eu.ict_diva.studio.main.feature" version="1.0.0.qualifier">
+      <category name="DivaStudio"/>
+   </feature>
+   <category-def name="DivaStudio" label="DivaStudio"/>
+</site>

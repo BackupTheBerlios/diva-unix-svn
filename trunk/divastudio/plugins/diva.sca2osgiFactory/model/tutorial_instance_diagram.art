@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ASCII"?>
+<art:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:art="http://art" xmlns:implem="http://art/implem" xmlns:instance="http://art/instance" xmlns:type="http://art/type">
+  <root name="tutorial_type_diagram">
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Client1" type="//@types.0">
+      <binding serverInstance="//@root/@subComponent.2" id="Server1" client="//@types.0/@port.0" server="//@types.1/@port.0"/>
+      <binding serverInstance="//@root/@subComponent.3" id="Server2" client="//@types.0/@port.1" server="//@types.1/@port.0"/>
+      <implem xsi:type="implem:OSGiComponent" implementingClass="tutorial.impl.ClientImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Client2" type="//@types.0">
+      <binding serverInstance="//@root/@subComponent.2" id="Server1" client="//@types.0/@port.0" server="//@types.1/@port.0"/>
+      <implem xsi:type="implem:OSGiComponent" implementingClass="tutorial.impl.ClientImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Server1" type="//@types.1">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="tutorial.impl.HelloWorldImpl"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="Server2" type="//@types.1">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="tutorial.impl.HelloWorldImpl"/>
+    </subComponent>
+  </root>
+  <services xsi:type="type:FunctionalService" name="tutorial.diva.HelloWorld"/>
+  <services xsi:type="type:FunctionalService" name="tutorial.diva.VoiceHelloWorld"/>
+  <types xsi:type="type:PrimitiveType" name="Client">
+    <port xsi:type="type:Port" name="defaultHelloWorld" lower="1" upper="1" isOptional="false" service="//@services.0" role="client"/>
+    <port xsi:type="type:Port" name="otherHelloWorlds" lower="0" upper="-1" isOptional="false" service="//@services.0" role="client"/>
+  </types>
+  <types xsi:type="type:PrimitiveType" name="Server">
+    <port xsi:type="type:Port" name="helloWorld" lower="0" upper="1" service="//@services.0" role="server"/>
+    <port xsi:type="type:Port" name="voiceHelloWorld" lower="0" upper="1" isOptional="false" service="//@services.1" role="client"/>
+  </types>
+</art:System>

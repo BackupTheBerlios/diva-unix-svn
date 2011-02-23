@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="uk.ulancs.diva.TraceArtifacts.viewerContribution3"
+            targetID="diva.presentation.DivaEditorID">
+         <action
+               class="uk.ulancs.diva.traceartifacts.pop.actions.DiVATraceArtifactsAction"
+               id="uk.ulancs.diva.TraceArtifacts.action4"
+               label="Find in FMP Model"
+               menubarPath="additions">
+         </action>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="uk.ulancs.diva.TraceArtifacts.viewerContribution4"
+            targetID="ca.uwaterloo.gp.fmp.FmpEditor">
+         <action
+               class="uk.ulancs.diva.traceartifacts.pop.actions.FMPTraceArtifactsAction"
+               id="uk.ulancs.diva.TraceArtifacts.action5"
+               label="Find in DiVA Model"
+               menubarPath="additions">
+         </action>
+      </viewerContribution>
+   </extension>
+
+</plugin>

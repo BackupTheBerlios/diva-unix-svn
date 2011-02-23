@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DiVA Studies UI Plug-in
+Bundle-SymbolicName: eu.ict_diva.studies.ui;singleton:=true
+Bundle-Version: 1.0.1
+Bundle-Activator: eu.ict_diva.studies.ui.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ fr.irisa.triskell.eclipse.util;bundle-version="[1.3.0,2.0.0)"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: ict-diva.eu

@@ -1,0 +1,140 @@
+/* $Id:$ 
+ * Creation : February 8, 2010
+ * Licence  : EPL 
+ * Copyright:
+ * Authors  : 
+ *            barais
+ */ 
+@mainClass "smartadapters4ART::Main"
+@mainOperation "main"
+
+
+package smartadapters4ART; 
+
+
+require kermeta
+
+
+
+//require "platform:/lookup/org.kermeta.art.adapter/model/runtime_AOM_Framework1.ecore"
+require "../model/s0.kmt"
+require "./adaptationsGenerator.kmt"
+
+using kermeta::standard
+using kermeta::language::structure
+using kermeta::persistence
+
+using art_relaxed
+
+class Main {
+	
+	operation main(file : String) : Void is do
+		self.process(file,file.replace(".smART",".drl").replace(".xmi",".drl"))		
+		//self.process("file:/C:/NOSAVE/workspaces/runtime-New_configuration/SmartAdaptersV2/v2/01_LoggingAdapter.smART","file:/C:/NOSAVE/workspaces/runtime-New_configuration/SmartAdaptersV2/v2/01_LoggingAdapter.drl")
+	end
+	
+	
+	operation process(smarturl:String,drl:String):Void is do
+	
+		var ctx : art_relaxed::Context init art_relaxed::Context.new
+		ctx.res := kermeta::utils::StringBuffer.new
+		ctx.cache := kermeta::utils::Hashtable<Object,String>.new		
+		
+		var rep : EMFRepository  init EMFRepository.new
+		var res : EMFResource 
+		
+		//resource -> plugin once deployed 
+		res ?= rep.createResource(smarturl, "platform:/plugin/org.kermeta.art.model/model/aom/art_AOM_Framework.ecore")
+		res.load
+		var asp : Aspect
+		asp ?= res.one()
+		 
+		ctx.res.append("global java.util.Map uniqueobjects;\n")
+		ctx.res.append("global java.util.Map perRole;\n")
+		ctx.res.append("global java.util.Map perElem;\n")
+		ctx.res.append("Rule \"Aspect\"\n")
+		ctx.res.append("when\n")
+		
+		asp.pointcut.content.each{o | o.pointcut2droolsPass1(ctx)}
+		ctx.res.append("\n")
+		asp.pointcut.content.each{o | o.pointcut2droolsPass2(ctx)}
+		
+		ctx.res.append("\nthen\n\n")
+		
+		if asp.advice != void then
+			asp.advice.content.each{o | o.generateDeclare(ctx)}
+			ctx.res.append("\n")
+			asp.strategies.each{s | s.generate(ctx)}
+			ctx.res.append("\n")
+			asp.advice.content.each{o | o.generatePerJoinPointStrategy(ctx)}
+			ctx.res.append("\n")		
+			asp.advice.content.each{o | o.pass2set(ctx)}
+			ctx.res.append("\n")
+		end
+		
+		var ctxadaptation : smartadapters4ART::adaptations::Context init smartadapters4ART::adaptations::Context.new
+		ctxadaptation.res := kermeta::utils::StringBuffer.new
+		ctxadaptation.cache := kermeta::utils::Hashtable<Object,String>.new		
+		
+		ctx.cache.keys().each{key| ctxadaptation.cache.put(key,ctx.cache.getValue(key))}
+		asp.adapt.each{a| a.toDrools(ctxadaptation)} 
+		
+		ctx.res.append(ctxadaptation.res.toString)
+		
+		ctx.res.append("end")
+		
+		stdio.writeln(ctx.res.toString)
+		
+		var f : kermeta::io::FileIO init kermeta::io::FileIO.new
+		stdio.writeln("saving to "+drl)
+		f.writeTextFile(drl,ctx.res.toString)
+		stdio.writeln(ctx.res.toString)	
+	end
+}
+
+
+
+aspect class InstantiationStrategy {
+	operation generate(ctx : Context) : Void is
+		abstract
+}
+
+aspect class GlobalInstantiation {
+	method generate(ctx : Context) : Void is
+	do	
+		adviceElements.each{elt |
+			elt.generateGlobalStrategy(ctx)		
+		}
+	end
+}
+
+aspect class PerElementMatch {
+	method generate(ctx : Context) : Void is
+	do	
+		var ids : Set<String> init Set<String>.new
+		self.pointcutElements.each{ elt |
+			var id : String init ctx.getGenerateName(elt)
+			ctx.cache.put(elt,id)
+			ids.add(id)
+		}
+		
+		adviceElements.each{elt |
+			elt.generatePerElementStrategy(ctx, ids)		
+		}
+	end
+}
+
+aspect class PerRoleMatch {
+	method generate(ctx : Context) : Void is
+	do	
+		var ids : Set<String> init Set<String>.new
+		self.pointcutElements.each{ elt |
+			var id : String init ctx.getGenerateName(elt)
+			ctx.cache.put(elt,id)
+			ids.add(id)
+		}
+		adviceElements.each{elt |
+			elt.generatePerRoleStrategy(ctx, ids)		
+		}
+	end
+}

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DiVA ARF Activator
+Bundle-SymbolicName: de.pure.diva.arf.activator;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.pure.diva.arf.activator.ARFActivator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ de.pure.diva.arf.service,
+ diva.model;visibility:=reexport,
+ org.eclipse.featuremodel.metamodel;visibility:=reexport
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: arf.util,
+ de.pure.diva.arf.activator

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="art.resource.art.popups.contribution1"
+            nameFilter="*.art"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               icon="icons/DivaModelFile.gif"
+               id="art.resource.art.popups.menu1"
+               label="ART"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="art.resource.art.popups.popup.actions.XMI2ART"
+               enablesFor="1"
+               id="art.resource.art.popups.popup.actions.XMI2ART"
+               label="art 2 artext"
+               menubarPath="art.resource.art.popups.menu1/group1">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="art.resource.art.popups.contribution2"
+            nameFilter="*.artext"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               icon="icons/DivaModelFile.gif"
+               id="art.resource.art.popups.menu2"
+               label="ART"
+               path="additions">
+            <separator
+                  name="group2">
+            </separator>
+         </menu>
+         <action
+               class="art.resource.art.popups.popup.actions.ART2XMI"
+               enablesFor="1"
+               id="art.resource.art.popups.popup.actions.ART2XMI"
+               label="artext 2 art"
+               menubarPath="art.resource.art.popups.menu2/group2">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="art.resource.art.popups.contribution4"
+            nameFilter="*.smARText"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               icon="icons/DivaModelFile.gif"
+               id="art.resource.art.popups.menu2"
+               label="ART"
+               path="additions">
+            <separator
+                  name="group2">
+            </separator>
+         </menu>
+         <action
+               class="art.resource.art.popups.popup.actions.PART2XMI"
+               enablesFor="1"
+               id="art.resource.art.popups.popup.actions.PART2XMI"
+               label="smARText 2 smART"
+               menubarPath="art.resource.art.popups.menu2/group2">
+         </action>
+      </objectContribution>
+      <objectContribution
+            id="art.resource.art.popups.contribution1"
+            nameFilter="*.smART"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               icon="icons/DivaModelFile.gif"
+               id="art.resource.art.popups.menu1"
+               label="ART"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="art.resource.art.popups.popup.actions.XMI2PART"
+               enablesFor="1"
+               id="art.resource.art.popups.popup.actions.XMI2PART"
+               label="smART 2 smARText"
+               menubarPath="art.resource.art.popups.menu1/group1">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

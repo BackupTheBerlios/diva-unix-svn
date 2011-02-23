@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+		<category
+            id="diva.example.category"
+            name="DiVA Samples"
+            parentCategory="org.eclipse.ui.Examples"/>
+      
+      	<wizard
+            canFinishEarly="true"
+            category="org.eclipse.ui.Examples/diva.example.category"
+            class="eu.ict_diva.causallink.deployer.ui.wizards.CausallinkRuntimeSamplesSrcExampleWizard"
+            finalPerspective="org.eclipse.ui.resourcePerspective"
+            hasPages="false"
+            icon="icons/DivaIcon16.gif"
+            id="eu.ict_diva.causallink.deployer.ui.wizards"
+            name="Runtime (CAS) Samples"/>
+   </extension>
+
+</plugin>

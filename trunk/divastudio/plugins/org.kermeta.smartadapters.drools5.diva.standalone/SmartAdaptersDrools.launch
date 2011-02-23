@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.kermeta.smartadatpers.drools5.diva.standalone/src/org/kermeta/smartadapters/drools/standalone/SmartAdaptersDrools.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.kermeta.smartadapters.drools.standalone.SmartAdaptersDrools"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="file:/C:/NOSAVE/DiVAStudio/eclipse/workspace/eu.ict_diva.studies/CAS/weaving/base/baseModel.art file:/C:/NOSAVE/DiVAStudio/eclipse/workspace/eu.ict_diva.studies/CAS/weaving/base/woven.art C:/NOSAVE/DiVAStudio/eclipse/workspace/eu.ict_diva.studies/CAS/weaving/aspectsV2/01_drivingAspect.drl"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.kermeta.smartadatpers.drools5.diva.standalone"/>
+</launchConfiguration>

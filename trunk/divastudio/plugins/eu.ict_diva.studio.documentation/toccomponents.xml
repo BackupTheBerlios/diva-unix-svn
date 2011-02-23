@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="DiVA components" link_to="toc.xml#components"> 
+	<topic label="Main Topic"  href="html/samples/maintopic.html"> 
+		<topic label="Sub Topic" href="html/samples/subtopic.html" /> 
+	</topic>
+</toc>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="de.pure.diva.arf.activator.reasoner">
+      <reasoner
+            class="de.pure.diva.arf.pm.reasoner.PartitioningReasoner"
+            id="de.pure.diva.arf.pm.reasoner.ui.reasoner">
+      </reasoner>
+   </extension>
+
+</plugin>

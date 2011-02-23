@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="de.pure.diva.arf.wp2.simulator.ui.simulator"
+            nameFilter="*.diva"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu"
+               label="WP2 Simulator"
+               path="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/wp2">
+            <separator
+                  name="all">
+            </separator>
+            <separator
+                  name="step">
+            </separator>
+            <separator
+                  name="additions">
+            </separator>
+         </menu>
+         <action
+               class="de.pure.diva.arf.wp2.simulator.ui.CompleteSimulationAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.wp2.simulator.ui.completeSimu"
+               label="Complete Simulation"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu/all">
+         </action>
+         <action
+               class="de.pure.diva.arf.wp2.simulator.ui.ComputeConfigurationVerdictsAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.wp2.simulator.ui.computeVerdicts"
+               label="Step 4: Compute Verdicts"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu/step">
+         </action>
+         <action
+               class="de.pure.diva.arf.wp2.simulator.ui.ComputeConfigurationScoresAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.wp2.simulator.ui.computeScores"
+               label="Step 3: Compute Configuration Scores"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu/step">
+         </action>
+         <action
+               class="de.pure.diva.arf.wp2.simulator.ui.ComputePropertyPrioritiesAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.wp2.simulator.ui.computePrios"
+               label="Step 2: Compute Property Priorities"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu/step">
+         </action>
+         <action
+               class="de.pure.diva.arf.wp2.simulator.ui.GetAllSuitableConfigsAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.wp2.simulator.ui.inferConfigs"
+               label="Step 1: Infer Suitable Configurations"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/de.pure.diva.arf.wp2.simulator.ui.WP2SIMUmenu/step">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

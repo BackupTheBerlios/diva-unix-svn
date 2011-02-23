@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="uk.ulancs.diva.FeatureTreeAnalyzer.contribution1"
+            nameFilter="*.fmp"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               label="ArborCraft"
+               path="additions"
+               id="ArborCraftExtension.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="Similarity Analysis"
+               class="uk.ulancs.diva.FeatureTreeAnalyzer.popup.actions.AnalyzerAction"
+               menubarPath="ArborCraftExtension.menu1/group1"
+               enablesFor="2"
+               id="uk.ulancs.diva.FeatureTreeAnalyzer.newAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>

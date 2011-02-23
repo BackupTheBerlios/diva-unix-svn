@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="de.pure.diva.arf.examples.walkthroughs.ui" default="main" basedir="..">
+
+	<target name="main" depends="clean, zips/de.pure.diva.arf.examples.walkthroughs.zip">
+	</target>
+
+	<target name="init">
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="archive.result.folder" value="${basedir}/zips"/>
+	</target>
+
+	<target name="zips/de.pure.diva.arf.examples.walkthroughs.zip" depends="init" unless="zips/de.pure.diva.arf.examples.walkthroughs.zip">
+        <property name="destdir" value="${temp.folder}/zips"/>
+        <property name="destfile" value="de.pure.diva.arf.examples.walkthroughs.zip"/>
+		<delete dir="${destdir}"/>
+		<mkdir dir="${destdir}"/>
+        <!-- copy necessary resources -->
+        <copy todir="${destdir}">
+            <fileset dir="${basedir}/../de.pure.diva.arf.examples.walkthroughs"/>
+        </copy>
+		<delete dir="${destdir}/bin"></delete>
+        <!-- archive resources -->
+		<zip destfile="${destdir}/${destfile}" basedir="${destdir}"></zip>
+		<!-- copy archive -->
+		<copy file="${destdir}/${destfile}" todir="${archive.result.folder}" ></copy>
+		<delete dir="${destdir}"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete file="${archive.result.folder}/de.pure.diva.arf.examples.walkthroughs.zip"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+</project>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+  	<extensionContent id="euictdivastudio-introExtension" style="css/overviewConfigExtension.css" name="DiVA Studio overview Extension" path="overview/@">
+		<group style-id="content-group" id="euictdivastudio-introOverviewLink-group">
+       		<link label="DiVA Studio" url="http://org.eclipse.ui.intro/showHelpTopic?id=/eu.ict_diva.studio.documentation/html/gettingstarted/DiVAProject.html" 
+       				id="euictdivastudio-introOverviewLink" style-id="content-link">
+          		<text>Find out how to deal with Dynamic Variability in Complex, Adaptive Systems</text>
+       		</link>
+       	</group>
+  	</extensionContent>
+</introContent>
