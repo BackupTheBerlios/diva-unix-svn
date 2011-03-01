@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sca:composite xmlns:sca="http://www.osoa.org/xmlns/sca/1.0" name="arf_type_diagram" targetNamespace="http://eclipse.org/arf/model/arf_type_diagram">
+  <sca:component constrainingType="de.pure.diva.arf.component" name="ARF">
+    <sca:implementation.java class="arf.component.ARF"/>
+    <sca:service name="ARF">
+      <sca:interface.java interface="service.arf.ARF"/>
+    </sca:service>
+    <sca:service name="IReasoning">
+      <sca:interface.java interface="diva.reasoning.IReasoning"/>
+    </sca:service>
+    <sca:service name="DiVAComponentOSGi">
+      <sca:interface.java interface="eu.diva.osgi.component.DiVAComponentOSGi"/>
+    </sca:service>
+  </sca:component>
+</sca:composite>

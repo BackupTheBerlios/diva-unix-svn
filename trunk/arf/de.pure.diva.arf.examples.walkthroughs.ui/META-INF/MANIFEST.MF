@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DiVA ARF Walkthroughs Ui Plug-in
+Bundle-SymbolicName: de.pure.diva.arf.examples.walkthroughs.ui;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.pure.diva.arf.examples.walkthroughs.ui.Activator
+Bundle-Vendor: ict-diva.eu
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy

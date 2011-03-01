@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <extension
+         point="org.eclipse.ui.popupMenus">
+     <objectContribution
+           id="diva.ui"
+           nameFilter="*.diva"
+           objectClass="org.eclipse.core.resources.IFile">
+        <menu
+              id="diva.ui.menu"
+              label="DiVA"
+              path="additions">
+           <separator
+                 name="simulator">
+           </separator>
+           <separator
+                 name="arf">
+           </separator>
+           <separator
+                 name="additions">
+           </separator>
+        </menu>
+     </objectContribution>
+      
+      <objectContribution
+            adaptable="false"
+            id="de.pure.diva.arf.ui"
+            nameFilter="*.diva"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="de.pure.diva.arf.ui.DIVAARFmenu"
+               label="Reasoning Framework"
+               path="diva.ui.menu/arf">
+            <separator
+                  name="groupInformation">
+            </separator>
+            <separator
+                  name="groupAllConfigurations">
+            </separator>
+            <separator
+                  name="groupOneConfiguration">
+            </separator>
+            <separator
+                  name="groupCleanModel">
+            </separator>
+            <separator
+                  name="wp2">
+            </separator>
+            <separator
+                  name="wp3">
+            </separator>
+            <separator
+                  name="additions">
+            </separator>
+         </menu>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelHowManyConfigurations"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.howManyConfigurations"
+               label="How many Configurations"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupInformation">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelAreThereConfigurations"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.areThereConfigurations"
+               label="Are there Configurations"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupInformation">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelAllReasonerAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.allReasoner"
+               label="All Reasoner"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupInformation">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelAllConfigurations"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.allConfigurations"
+               label="All Configurations"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupAllConfigurations">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelBestConfiguration"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.bestConfiguration"
+               label="Best Configuration"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupOneConfiguration">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelOneConfiguration"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.oneConfiguration"
+               label="One Configuration"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupOneConfiguration">
+         </action>
+         <action
+               class="de.pure.diva.arf.ui.DiVAMetaModelCleanAction"
+               enablesFor="1"
+               id="de.pure.diva.arf.ui.cleanSimu"
+               label="Clean Configurations"
+               menubarPath="diva.ui.menu/de.pure.diva.arf.ui.DIVAARFmenu/groupCleanModel">
+         </action>
+      </objectContribution>
+   </extension>
+</plugin>

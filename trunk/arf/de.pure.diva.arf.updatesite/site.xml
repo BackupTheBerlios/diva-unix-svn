@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/de.pure.diva.arf.alloy.feature_1.0.0.qualifier.jar" id="de.pure.diva.arf.alloy.feature" version="1.0.0.qualifier">
+      <category name="ARF"/>
+   </feature>
+   <feature url="features/de.pure.diva.arf.feature_1.0.0.qualifier.jar" id="de.pure.diva.arf.feature" version="1.0.0.qualifier">
+      <category name="ARF"/>
+   </feature>
+   <feature url="features/de.pure.diva.arf.rc.feature_1.0.0.qualifier.jar" id="de.pure.diva.arf.rc.feature" version="1.0.0.qualifier">
+      <category name="ARF"/>
+   </feature>
+   <category-def name="ARF" label="Adaptation And Reasoning Framework"/>
+</site>

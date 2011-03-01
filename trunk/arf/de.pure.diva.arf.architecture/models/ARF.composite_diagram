@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:sca="http://www.osoa.org/xmlns/sca/1.0" xmi:id="_A4UjobGpEd6JoJbfsxQA4Q" type="Sca" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_B2AT4LGpEd6JoJbfsxQA4Q" type="2001">
+    <children xmi:type="notation:Node" xmi:id="_B2AT47GpEd6JoJbfsxQA4Q" type="5008"/>
+    <children xmi:type="notation:Node" xmi:id="_B2AT5LGpEd6JoJbfsxQA4Q" type="7001">
+      <styles xmi:type="notation:SortingStyle" xmi:id="_B2AT5bGpEd6JoJbfsxQA4Q"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_B2AT5rGpEd6JoJbfsxQA4Q"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_B2KE4LGpEd6JoJbfsxQA4Q" type="7002">
+      <styles xmi:type="notation:SortingStyle" xmi:id="_B2KE4bGpEd6JoJbfsxQA4Q"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_B2KE4rGpEd6JoJbfsxQA4Q"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_B2KE47GpEd6JoJbfsxQA4Q" type="7003">
+      <styles xmi:type="notation:SortingStyle" xmi:id="_B2KE5LGpEd6JoJbfsxQA4Q"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_B2KE5bGpEd6JoJbfsxQA4Q"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_B2KE5rGpEd6JoJbfsxQA4Q" type="7004">
+      <children xmi:type="notation:Node" xmi:id="_CPMP8LGpEd6JoJbfsxQA4Q" type="3012">
+        <children xmi:type="notation:Node" xmi:id="_CPMP87GpEd6JoJbfsxQA4Q" type="5007"/>
+        <children xmi:type="notation:Node" xmi:id="_CPMP9LGpEd6JoJbfsxQA4Q" type="7009">
+          <styles xmi:type="notation:SortingStyle" xmi:id="_CPMP9bGpEd6JoJbfsxQA4Q"/>
+          <styles xmi:type="notation:FilteringStyle" xmi:id="_CPMP9rGpEd6JoJbfsxQA4Q"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_CPMP97GpEd6JoJbfsxQA4Q" type="7010">
+          <styles xmi:type="notation:SortingStyle" xmi:id="_CPMP-LGpEd6JoJbfsxQA4Q"/>
+          <styles xmi:type="notation:FilteringStyle" xmi:id="_CPMP-bGpEd6JoJbfsxQA4Q"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_CPMP-rGpEd6JoJbfsxQA4Q" type="7011">
+          <styles xmi:type="notation:SortingStyle" xmi:id="_CPMP-7GpEd6JoJbfsxQA4Q"/>
+          <styles xmi:type="notation:FilteringStyle" xmi:id="_CPMP_LGpEd6JoJbfsxQA4Q"/>
+        </children>
+        <children xmi:type="notation:Node" xmi:id="_CPMP_bGpEd6JoJbfsxQA4Q" type="7012">
+          <styles xmi:type="notation:SortingStyle" xmi:id="_CPMP_rGpEd6JoJbfsxQA4Q"/>
+          <styles xmi:type="notation:FilteringStyle" xmi:id="_CPMP_7GpEd6JoJbfsxQA4Q"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_CPMP8bGpEd6JoJbfsxQA4Q"/>
+        <element xmi:type="sca:Component" href="ARF.composite#//@composite/@component.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_CPMP8rGpEd6JoJbfsxQA4Q" x="160" y="19" width="261" height="225"/>
+      </children>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_B2KE57GpEd6JoJbfsxQA4Q"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_B2KE6LGpEd6JoJbfsxQA4Q"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_B2AT4bGpEd6JoJbfsxQA4Q"/>
+    <element xmi:type="sca:Composite" href="ARF.composite#//@composite"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_B2AT4rGpEd6JoJbfsxQA4Q" width="631" height="351"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_A4UjorGpEd6JoJbfsxQA4Q"/>
+  <element xmi:type="sca:DocumentRoot" href="ARF.composite#/"/>
+</notation:Diagram>

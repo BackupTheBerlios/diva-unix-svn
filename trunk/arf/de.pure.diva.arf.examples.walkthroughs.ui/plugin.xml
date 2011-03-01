@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="de.pure.diva.arf.examples.walkthroughs.ui.category"
+            name="DiVA ARF Samples"
+            parentCategory="org.eclipse.ui.Examples">
+      </category>
+      <wizard
+            canFinishEarly="true"
+            category="org.eclipse.ui.Examples/de.pure.diva.arf.examples.walkthroughs.ui.category"
+            class="de.pure.diva.arf.examples.walkthroughs.ui.wizards.ARFWalkthroughsWizard"
+            finalPerspective="org.eclipse.ui.resourcePerspective"
+            hasPages="false"
+            icon="icons/DiVA.gif"
+            id="de.pure.diva.arf.examples.walkthroughs.ui.wizard.walkthroughs"
+            name="ARF Walkthroughs">
+      </wizard>
+   </extension>
+
+</plugin>

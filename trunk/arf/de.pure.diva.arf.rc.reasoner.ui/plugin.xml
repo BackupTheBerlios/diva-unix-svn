@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="de.pure.diva.arf.activator.reasoner">
+      <reasoner
+            class="de.pure.diva.arf.rc.reasoner.RandomConfigurationReasoner"
+            id="de.pure.diva.arf.rc.reasoner.ui.reasoner.rcr">
+      </reasoner>
+      <reasoner
+            class="de.pure.diva.arf.rc.reasoner.RandomPathReasoner"
+            id="de.pure.diva.arf.rc.reasoner.ui.reasoner.rpr">
+      </reasoner>
+   </extension>
+
+</plugin>

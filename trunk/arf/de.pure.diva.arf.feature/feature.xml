@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.pure.diva.arf.feature"
+      label="DiVA ARF Feature"
+      version="1.0.0.qualifier"
+      provider-name="ict-diva.eu">
+
+   <description url="http://www.example.com/description">
+      The Adaptation Reasoning Framework (ARF).
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="diva.model"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.emf.common"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="fr.irisa.triskell.eclipse.util"/>
+      <import plugin="de.pure.diva.arf.activator" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="de.pure.diva.arf.service" version="1.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="de.pure.diva.arf.activator"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.examples.walkthroughs.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.documentation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.service"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.pure.diva.arf.reasoner.designtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

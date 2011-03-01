@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ASCII"?>
+<art:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:art="http://art" xmlns:implem="http://art/implem" xmlns:instance="http://art/instance" xmlns:type="http://art/type">
+  <root name="arf_type_diagram">
+    <subComponent xsi:type="instance:PrimitiveInstance" name="SimpleARF" type="//@types.0">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="arf.component.ARF"/>
+    </subComponent>
+    <subComponent xsi:type="instance:PrimitiveInstance" name="ARF">
+      <implem xsi:type="implem:OSGiComponent" implementingClass="arf.component.ARF"/>
+    </subComponent>
+  </root>
+  <services xsi:type="type:FunctionalService" name="diva.reasoning.IReasoning">
+    <operation name="getBestConfigurations">
+      <input name="java.lang.String arg0"/>
+      <input name="java.lang.String arg1"/>
+    </operation>
+  </services>
+  <services xsi:type="type:FunctionalService" name="service.arf.ARF">
+    <operation name="ask">
+      <input name="service.arf.question.QuestionHandle question"/>
+    </operation>
+    <operation name="setReasoner">
+      <input name="service.arf.reasoner.ReasonerHandle reasoner"/>
+    </operation>
+    <operation name="setModel">
+      <input name="service.arf.ModelHandle model"/>
+    </operation>
+    <operation name="setInput">
+      <input name="service.arf.InputHandle input"/>
+    </operation>
+    <operation name="ask">
+      <input name="service.arf.query.ReasonerQueryHandle query"/>
+      <input name="service.arf.question.QuestionHandle question"/>
+    </operation>
+  </services>
+  <types xsi:type="type:PrimitiveType" name="de.pure.diva.arf.component">
+    <port name="solving" lower="1" upper="1" isOptional="false" service="//@services.0" role="server"/>
+    <port name="reasoning" lower="1" upper="1" isOptional="false" service="//@services.1" role="server"/>
+  </types>
+</art:System>
