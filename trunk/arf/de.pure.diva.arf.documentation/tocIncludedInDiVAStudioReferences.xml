@@ -2,5 +2,5 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Adaptation Reasoning Framework" link_to="../eu.ict_diva.studio.documentation/toc.xml#reference">
-   <link toc="toc.xml"/> 
+   <link toc="tocReference.xml"/> 
 </toc>

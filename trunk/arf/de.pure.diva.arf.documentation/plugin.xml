@@ -5,7 +5,10 @@
    <extension
          point="org.eclipse.help.toc">
       <toc
-            file="toc.xml">
+            file="tocReference.xml">
+      </toc>
+      <toc
+            file="tocComponent.xml">
       </toc>
       <toc
             file="tocIncludedInDiVAStudioComponents.xml"

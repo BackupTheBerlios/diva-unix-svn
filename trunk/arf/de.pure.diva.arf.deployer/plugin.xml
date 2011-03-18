@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="diva.tools.category"
+            name="DiVA Tools"
+            parentCategory="org.eclipse.ui.Examples">
+      </category>
+      <wizard
+            canFinishEarly="true"
+            category="org.eclipse.ui.Examples/diva.tools.category"
+            class="de.pure.diva.arf.deployer.wizards.ARFRuntimeToolsExampleWizard"
+            finalPerspective="org.eclipse.ui.resourcePerspective"
+            hasPages="false"
+            icon="icons/DivaIcon16.gif"
+            id="de.pure.diva.arf.deployer.wizards"
+            name="Runtime (ARF) Tools">
+      </wizard>
+   </extension>
+
+</plugin>
