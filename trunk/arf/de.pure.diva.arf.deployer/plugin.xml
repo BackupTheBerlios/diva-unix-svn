@@ -16,7 +16,7 @@
             hasPages="false"
             icon="icons/DivaIcon16.gif"
             id="de.pure.diva.arf.deployer.wizards"
-            name="DiVA Reasoning Framework (ARF) Runtime Tools">
+            name="DiVA Runtime Reasoning Framework (ARF) Tools">
       </wizard>
    </extension>
 
