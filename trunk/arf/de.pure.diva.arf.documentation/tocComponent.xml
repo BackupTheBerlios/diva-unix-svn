@@ -3,6 +3,9 @@
 
 <toc label="ARF">
    <topic href="desc/index.html" label="Adaptation Reasoning Framework">
+      <topic href="http://sites.google.com/site/divawebsite/divastudio/diva-reasoning-framework" 
+      		 label="Online documentation">
+      </topic>
       <topic href="doc/index.html" label="API Reference">
       </topic>
    </topic> 
