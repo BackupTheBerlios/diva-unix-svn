@@ -56,7 +56,7 @@ public class EditAspect implements IObjectActionDelegate, Runnable {
 					IWorkbenchWindow window=PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					IWorkbenchPage page = window.getActivePage();
 					try {
-						page.openEditor(editorInput, "org.smartadapters.core.resource.smARText.ui.SmARTextEditor");
+						page.openEditor(editorInput, "smartadapters4ART.resource.smARText.ui.SmARTextEditor");
 					} catch (PartInitException e) {
 						e.printStackTrace();
 					}

@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
@@ -86,7 +87,7 @@ import diva.Dimension;
 import diva.NamedElement;
 import diva.Variant;
 
-public class AnalyzerAction implements IObjectActionDelegate {
+public class AnalyzerAction implements IObjectActionDelegate, IViewActionDelegate {
 
 	private Shell shell;
 	private Vector<IFile> Trees;
@@ -325,6 +326,7 @@ public class AnalyzerAction implements IObjectActionDelegate {
 				if (element instanceof ModelElementChangeLeftTarget){
 					ModelElementChangeLeftTarget left= (ModelElementChangeLeftTarget)element;
 					
+					if(left.getLeftElement() instanceof NamedElement){
 					NamedElement changedElement=(NamedElement)left.getLeftElement();
 					
 					System.out.println(element.getKind());
@@ -338,11 +340,13 @@ public class AnalyzerAction implements IObjectActionDelegate {
 						Difference difference= new Difference(null,changedElement,Difference.ADDITION);
 						changes.add(difference);
 					}
+					}
 					
 					
 				}else if (element instanceof ModelElementChangeRightTarget){
 					ModelElementChangeRightTarget right= (ModelElementChangeRightTarget)element;
 					
+					if(right.getRightElement() instanceof NamedElement){
 					NamedElement changedElement=(NamedElement)right.getRightElement();
 				
 					System.out.println(element.getKind());
@@ -356,6 +360,7 @@ public class AnalyzerAction implements IObjectActionDelegate {
 					}else if(kind.equals(Difference.ADDITION)){
 						Difference difference= new Difference(null,changedElement,Difference.ADDITION);
 						changes.add(difference);
+					}
 					}
 					
 					
@@ -443,7 +448,7 @@ public class AnalyzerAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void run(IAction action) {
-		
+		changes= new ArrayList<Difference>();
 		List<DiffElement> differences= getDiVADifferences(Trees.get(0),Trees.get(1));
 		applyDifferences(getFMP());
 		
@@ -452,7 +457,7 @@ public class AnalyzerAction implements IObjectActionDelegate {
 					shell,
 					"DiVAModelCompare",
 				"DiVA Model Changes Applied.");
-
+			
 		
 	}
 
@@ -460,6 +465,7 @@ public class AnalyzerAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		try{
 		Trees.removeAllElements();
 		Iterator<IFile> it= ((StructuredSelection) selection).iterator();
 		
@@ -467,6 +473,14 @@ public class AnalyzerAction implements IObjectActionDelegate {
 			IFile file= it.next();
 			Trees.add(file);
 		}
+		}catch(Exception e){
+			
+		}
+		
+	}
+
+	public void init(IViewPart view) {
+		// TODO Auto-generated method stub
 		
 	}
 

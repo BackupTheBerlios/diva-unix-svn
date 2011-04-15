@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="DiVA Studio Guide" topic="html/toc.html">
-   <topic label="Getting Started">
+<toc label="DiVA Studio Guide" >
+   <topic label="Getting Started" href="html/gettingstarted/gettingstarted.html">
       <anchor id="gettingstarted"/>
+      <topic label="Samples">
+      	<anchor id="samples"/>
+   	  </topic>
    </topic>
-   <topic label="Concepts">
+   <!-- <topic label="Concepts">
       <anchor id="concepts"/>
-   </topic>
+   </topic> -->
+   <topic label="Methodology" href="http://diva-unix.berlios.de/methodology/index.htm" />
    <topic label="Components">
       <anchor id="components"/>
    </topic>
-   <topic label="Reference">
+   <!-- <topic label="Reference">
       <anchor id="reference"/>
-   </topic>
-   <topic label="Samples">
+   </topic> -->
+   <!--<topic label="Samples">
       <anchor id="samples"/>
-   </topic>
+   </topic>-->
 </toc>

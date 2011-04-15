@@ -16,7 +16,7 @@
             hasPages="false"
             icon="icons/DivaIcon16.gif"
             id="eu.ict_diva.causallink.deployer.ui.wizards"
-            name="Runtime (CAS) Samples"/>
+            name="DiVA Runtime (CAS) Samples"/>
    </extension>
 
 </plugin>

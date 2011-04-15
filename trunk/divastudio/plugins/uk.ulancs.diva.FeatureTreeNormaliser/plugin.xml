@@ -25,5 +25,26 @@
          </action>
       </objectContribution>
    </extension>
+   
+   <extension point="org.eclipse.ui.viewActions"> 
+<viewContribution 
+      id="org.eclipse.ui.articles.action.contribution.view" 
+   targetID="org.eclipse.ui.views.ResourceNavigator">
+   <action
+         class="uk.ulancs.diva.FeatureTreeNormaliser.popup.actions.NormaliserAction"
+         disabledIcon="icons/grey_dot.gif"
+         enablesFor="1"
+         icon="icons/green_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.view.action2"
+         label="Normalise Feature Tree"
+         toolbarPath="group1"
+         tooltip="Normalises the feature descriptions of the selected featured tree by pushing and combining the description text up the tree.">
+      <selection
+            class="org.eclipse.core.resources.IFile"
+            name="*.fmp">
+         </selection>
+      </action> 
+   </viewContribution> 
+</extension>
 
 </plugin>

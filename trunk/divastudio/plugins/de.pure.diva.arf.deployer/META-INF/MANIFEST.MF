@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DiVA ARF Deployer
+Bundle-SymbolicName: de.pure.diva.arf.deployer;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: de.pure.diva.arf.deployer.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: ict-diva.eu

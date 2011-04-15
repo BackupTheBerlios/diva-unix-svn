@@ -31,6 +31,61 @@
                menubarPath="ArborCraftExtension.menu1/group1">
          </action>
       </objectContribution>
+      <objectContribution
+           id="diva.ui"
+           nameFilter="*.diva"
+           objectClass="org.eclipse.core.resources.IFile">
+        <menu
+              id="diva.ui.menu"
+              label="DiVA"
+              path="additions">
+           <separator
+                 name="design">
+           </separator>
+           <separator
+                 name="arf">
+           </separator>
+           <separator
+                 name="additions">
+           </separator>
+        </menu>
+     </objectContribution>
+     <objectContribution
+            id="uk.ulancs.diva.DiVAModelCompare.contribution1"
+            nameFilter="*.diva"
+            objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               label="Requirement engineering"
+               path="diva.ui.menu/additions"
+               id="requirementengineering.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="DiVA Model Compare"
+               class="uk.ulancs.diva.DiVAModelCompare.popup.actions.AnalyzerAction"
+               menubarPath="diva.ui.menu/requirementengineering.menu1/group1"
+               enablesFor="2"
+               id="uk.ulancs.diva.DiVAModelCompare.newAction2">
+         </action>
+         <action
+               class="uk.ulancs.diva.DiVAModelCompare.popup.actions.ApplySimulations"
+               enablesFor="1"
+               id="uk.ulancs.diva.DiVAModelCompare.applySimulations2"
+               label="Apply Simulations"
+               menubarPath="diva.ui.menu/requirementengineering.menu1/group1">
+         </action>
+         
+         <action
+               class="arborcraftplugin.commands.ACAction"
+               enablesFor="1"
+               id="arborcraftplugin.commands.ACAction2"
+               label="Run ArborCraftExt"
+               menubarPath="diva.ui.menu/requirementengineering.menu1/group1">
+         </action>
+         
+      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
@@ -40,5 +95,40 @@
             file-names="*">
       </file-association>
    </extension>
+   
+   <extension point="org.eclipse.ui.viewActions"> 
+<viewContribution 
+      id="org.eclipse.ui.articles.action.contribution.view" 
+   targetID="org.eclipse.ui.views.ResourceNavigator">
+   <action
+         class="uk.ulancs.diva.DiVAModelCompare.popup.actions.AnalyzerAction"
+         disabledIcon="icons/grey_dot.gif"
+         enablesFor="2"
+         icon="icons/orange_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.view.action2"
+         label="DiVA Model Compare"
+         toolbarPath="group1"
+         tooltip="Compares the two selected models to extract the changes between them and apply the changes to the relevant feature model.">
+      <selection
+            class="org.eclipse.core.resources.IFile"
+            name="*.diva">
+         </selection>
+      </action> 
+      <action
+            class="uk.ulancs.diva.DiVAModelCompare.popup.actions.ApplySimulations"
+            disabledIcon="icons/grey_dot.gif"
+            enablesFor="1"
+            icon="icons/yellow_dot.gif"
+            id="org.eclipse.ui.articles.action.contribution.view.action2"
+            label="Apply Simulations"
+            toolbarPath="group1"
+            tooltip="Applies the simulations results from the selected DiVA model to the relevant feature model to extract the appropriate requirements.">
+      <selection
+            class="org.eclipse.core.resources.IFile"
+            name="*.diva">
+         </selection>
+      </action> 
+   </viewContribution> 
+</extension>
 
 </plugin>

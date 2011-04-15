@@ -2,10 +2,9 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Samples and studies" link_to="toc.xml#samples"> 
-	<topic label="Overview"  href="html/samples/maintopic.html"> 
-		<topic label="Sub Topic" href="html/samples/subtopic.html" /> 
+	<topic label="Installation"  href="html/samples/installation.html"/>
+	<topic label="Online tutorials and videos"  href="html/samples/tutorials.html"/> 
+		
+	<topic label="Requirements Engineering Tools samples"  href="html/samples/RequirementEngineeringTool/scenario/re_scenario.html">			  		
 	</topic>
-	<topic label="Main Topic 2">
-		<topic label="Sub Topic 2" href="html/samples/subtopic2.html" /> 
-	</topic> 
 </toc>

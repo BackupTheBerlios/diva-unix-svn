@@ -7,13 +7,16 @@ public class Variant {
 	
 	private String name,dimension,id,type;
 	private List<String> dependencies;
+	private int upper,lower;
 	
-	public Variant(String n, String d,String id,String type){
+	public Variant(String n, String d,String id,String type,int upper, int lower){
 		name=n;
 		dimension=d;
 		this.id= id;
 		this.type=type;
 		this.dependencies= new ArrayList<String>();
+		this.upper= upper;
+		this.lower= lower;
 	}
 
 	public void setName(String name) {
@@ -50,6 +53,22 @@ public class Variant {
 	
 	public String getType(){
 		return this.type;
+	}
+
+	public int getUpper() {
+		return upper;
+	}
+
+	public void setUpper(int upper) {
+		this.upper = upper;
+	}
+
+	public int getLower() {
+		return lower;
+	}
+
+	public void setLower(int lower) {
+		this.lower = lower;
 	}
 
 }

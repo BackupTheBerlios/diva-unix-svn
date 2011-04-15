@@ -19,7 +19,7 @@
 			<property name="eclipse.version.name" value="linux_x86_64"/>	
 			<property name="archive.extension" value="tar.gz"/>	
 		</ant>
-		<ant antfile="get_studio_base_build.xml" dir="..">
+		<!--<ant antfile="get_studio_base_build.xml" dir="..">
 			<property name="eclipse.version.name" value="linux_x86"/>	
 			<property name="archive.extension" value="tar.gz"/>	
 		</ant>
@@ -30,7 +30,7 @@
 		<ant antfile="get_studio_base_build.xml" dir="..">
 			<property name="eclipse.version.name" value="macosx-cocoa"/>	
 			<property name="archive.extension" value="tar.gz"/>	
-		</ant>
+		</ant>-->
 		<ant antfile="get_studio_base_build.xml" dir="..">
 			<property name="eclipse.version.name" value="win32"/>	
 			<property name="archive.extension" value="zip"/>	

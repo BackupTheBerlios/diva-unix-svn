@@ -1,6 +1,7 @@
 package uk.ulancs.diva.FeatureTreeNormaliser.Normaliser;
 
 import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.EList;
@@ -31,8 +32,9 @@ public class Normaliser {
 		NormaliseNodes(model.getChildren(),model.getName(),model);
 	}
 	
-	public String NormaliseNodes(EList l,String owner,Node root) {
-		String AggregateDesc = "";
+	public Vector<String> NormaliseNodes(EList l,String owner,Node root) {
+		Vector<String> ReturnVector = new Vector<String>();
+		//String AggregateDesc = "";
 		
 		for(Iterator it= l.iterator();it.hasNext();){
 			Object child= it.next();
@@ -46,32 +48,28 @@ public class Normaliser {
 					if (nodeName!=null) {
 						
 						if (nodeName.contains("softgoal")) {
-							return "";
+							return new Vector<String>();
 						}
 						else if (nodeName.contains("group")) {
 							return NormaliseNodes(node.getChildren(),nodeName,root);
 						}
 						else {
 							if (node.getChildren().size() > 0) {
-								if (getDescription(node).length() > 0) {
-									NormaliseNodes(node.getChildren(),nodeName,root);
-									AggregateDesc += getDescription(node) + " ";
-								}
-								else {
-									String ChildAggregate = NormaliseNodes(node.getChildren(),nodeName,root);
-									setDescription(node, ChildAggregate);
-									AggregateDesc += getDescription(node) + " ";
-								}
+								Vector<String> ChildAggregate = NormaliseNodes(node.getChildren(),nodeName,root);
+								setDescription(node, ChildAggregate);
+								ReturnVector = AggregateDescs(ReturnVector, ChildAggregate);
 							}
 							else {
 								String NodeDesc = getDescription(node);
 								if (NodeDesc.equals("")) {
-									setDescription(node, nodeName);
+									Vector<String> NameVector = new Vector<String>();
+									NameVector.add(nodeName);
+									setDescription(node, NameVector);
+									NodeDesc = nodeName;
 								}
-								else {
-									if (!AggregateDesc.contains(NodeDesc)) {
-										AggregateDesc += getDescription(node) + " ";
-									}
+
+								if (!Contains(ReturnVector, NodeDesc)) {
+										ReturnVector.add(NodeDesc);
 								}
 							}
 						}
@@ -80,7 +78,41 @@ public class Normaliser {
 			}
 		}
 		
-		return AggregateDesc;
+		return ReturnVector;
+	}
+	
+	public boolean Contains(Vector<String> TheVector, String Desc) {
+		Iterator<String> VectorIt = TheVector.iterator();
+		
+		while (VectorIt.hasNext()) {
+			String CurrentString = VectorIt.next();
+			if (CurrentString.replaceAll("\\s", "").equals(Desc.replaceAll("\\s", ""))) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public Vector<String> AggregateDescs(Vector<String> Vector1, Vector<String> Vector2) {
+		Vector<String> ReturnVector = new Vector<String>();
+		
+		Iterator<String> Vector1It = Vector1.iterator();
+		
+		while (Vector1It.hasNext()) {
+			ReturnVector.add(Vector1It.next());
+		}
+		
+		Iterator<String> Vector2It = Vector2.iterator();
+		
+		while (Vector2It.hasNext()) {
+			String CurrentString = Vector2It.next();
+			if (!Contains(Vector1, CurrentString)) {
+				ReturnVector.add(CurrentString);
+			}
+		}
+		
+		return ReturnVector;
 	}
 	
 	public String getName(Node n){
@@ -112,7 +144,7 @@ public class Normaliser {
 		return null;
 	}
   	
-  	public String setDescription(Node n, String AggVal){
+  	public void setDescription(Node n, Vector<String> AggVal){
 		Feature properties= n.getProperties();
 		
 		if(properties!=null){
@@ -122,17 +154,26 @@ public class Normaliser {
 				Object Second = ((Feature)First.getChildren().get(0)).eAdapters().get(0).getTarget();
 				
 				if(Second instanceof TypedValue){
-					String CurrentVal = ((TypedValue)Second).getStringValue();
-					if (!AggVal.contains(CurrentVal)) {
-						AggVal += " " + CurrentVal;
+					String CurrentVal = ((TypedValue)Second).getStringValue().trim();
+					String Aggregate = "";
+					Iterator<String> AggValIt = AggVal.iterator();
+					
+					while (AggValIt.hasNext()) {
+						String ThisVal = AggValIt.next().trim();
+						if(ThisVal.lastIndexOf(";")==ThisVal.length()-1)
+							ThisVal= ThisVal.substring(0, ThisVal.length()-1);
+						if (!CurrentVal.replaceAll("\\s", "").contains(ThisVal.replaceAll("\\s", ""))) {
+							Aggregate += ThisVal + " ";
+						}
 					}
 					
-					((TypedValue)Second).setStringValue(AggVal);
+					Aggregate += CurrentVal;
+					
+					((TypedValue)Second).setStringValue(Aggregate);
 					// ((Feature)First.getChildren().get(0)).eAdapters().get(0).setTarget((Notifier)Second);
 					((Feature)n).setTypedValue(((TypedValue)Second));
 				}
 			}
 		}
-		return AggVal;
 	}
 }

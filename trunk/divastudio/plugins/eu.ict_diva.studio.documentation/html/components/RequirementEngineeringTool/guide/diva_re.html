@@ -1,0 +1,226 @@
+<h1>DiVA Requirements Engineering Tools</h1>
+This manual contains instructions for:
+<ul>
+<li><a href="#ArborCraftExt">ArborCraftExt</a><br>
+<li><a href="#FMP2DiVA">FMP2DiVA</a>
+<li><a href="#Normaliser">Feature Tree Normaliser</a></li>
+<li><a href="#Similarity">Feature Tree Similarity Analysis</a></li>
+<li><a href="#Compare">DiVA Compare</a></li>
+<li><a href="#Simulation">DiVA Simulation Analysis</a></li>
+</ul>
+<a name="ArborCraftExt"><h2>ArborCraftExt</h2></a> 
+ArborCraft is a tool that will help you create feature models from natural-language requirements documents, using a suite of powerful automatic techniques as well as using your domain knowledge to guide the process.  
+<br>
+ArborCraft is applied to a plain text file (.txt). First select your text file and then activate ArborCraftExt via the context menu option or via the view toolbar item (see Figure 1).<br>
+<br>
+<center><img src="context_menu.png" alt="Context Menu"/>  <img src="view_toolbar.jpg"><br></center>
+<br>
+<center><b>Figure 1</b> ArborCraftExt is activated via the context-menu (left) or the view tool bar item (right).</center><br>
+<br>
+ArborCraft gives you some options to help tweak the feature model creation process (see Figure 2).</br>
+<center><img src="arborcraftext.png" alt="ArborCraftExt Options"><br></center>
+<br>
+<center><b>Figure 2</b> ArborCraftExt options</center><br>
+<br>
+The options are as follows:
+<ul>
+<li>No. of sentences: tells ArborCraft how to break down the requirements documents into individual requirements.  Setting this to 0 will result in breaking the requirements on a blank line; that is, respecting the original structure of the document.  Setting it to a number greater than 0 will tell ArborCraft to split requirements on the given number of sentences.
+
+<li>No. of levels: specifies the maximum number of levels in the resulting feature tree.  A small number will give a broad, flat tree; a larger number will give a deeper and more fine-grained hierarchy.
+
+<li>Similarity threshold: if left at 0.0, ArborCraft will cluster all of the requirements into a single tree, even if they are dissimilar.  Setting this value to a higher number (&lt; 1.0) tells ArborCraft to stop clustering once the similarity drops below this number.  This will usually result in a "forest" of smaller feature trees.
+
+<li>Mandatory percentage: given multiple documents, ArborCraft will attempt to disambiguate between mandatory and variant requirements based on their distribution across the document set.  A feature is considered mandatory if the requirements that make it up are taken from more than the set percentage of documents, and variant if they are taken from fewer than this percentage.
+<li>Run EA-Miner: This option allows to enable (when checked, as is the default option) and disable (when unchecked) the lexicon-based processing. This includes the lexicon-based variability, soft-goal, adaption point, and context identification. All of these options have been detailed previously in this document.
+<li>Lexicon File: Via this parameter a proprietary lexicon file can be provided. If this option is not used, a default lexicon file is used.
+<li>Composition File: Via this parameter an (optional) composition file can be provided. If this option is not used, the tool will not carry out any composition-related processing. 
+<li>Automatic Naming: Provides support for feature naming via suggestions of "clue terms" for each feature name. EA-Miner needs to be enabled for this option.</li>
+</ul>
+<h3>Output</h3>
+Once the appropriate options have been set and OK pressed, on completion of the ArborCraft process, a new folder will be present with the same name as the requirements document.  This folder should contain the following files (assuming the file doc.txt):
+<ul>
+<li>doc.fmp: the feature model in FMP format; this can then be edited using the FMP plugin;
+<li>doc.rdl: breakdown of the features in FeatureRDL format;
+<li>doc.dot: the feature model in Graphviz format;
+<li>doc.jpg: the Graphviz-generated image of the feature model (requires working installation of Graphviz including dot binary on system path)
+</ul>
+
+
+<h3>Experimental Features</h3>
+A number of experimental features are also provided in ArborCraftExt that are not core to the DiVA studio, these include:
+<ul>
+<li>Enable tracing/Repository name: see <a href="#Trace">Generating Trace Links</a>.
+
+<li>Identify ambiguities: see <a href="#Imperfect">Handling Imperfect Information.</a>
+
+<li>Attribute weighting: see <a href="#AttributeWeighting">Attribute Weighting.</a>
+</ul>
+
+<a name="Trace"><h3>Generating Trace Links</h3></a>
+If the Enable tracing option is selected, ArborCraft will automatically generate trace links in an ATF repository.  This repository should exist in the same Eclipse project as the requirements document(s) and the name of the repository can be set using the Repository name option.
+
+<a name="Imperfect"><h3>Handling Imperfect Information</h3></a>
+When the Identify Ambiguities option is checked, ArborCraft will start a three-step procedure for identifying and handling ambiguous requirements during the creation of the feature tree. The first step is the selection of ambiguous requirements. Figure 3 below depicts the window for selecting ambiguous requirements in the requirement specification.<br>
+
+<center><img src="ambiguity-dialog.png" alt="Attribute Weighting"><br></center>
+<br>
+<center><b>Figure 3</b> Ambiguous requirements selection.</center><br>
+<br>
+
+When the ambiguous requirements have been identified, the next step is to define possible interpretations for these requirements. Figure 4 below depicts the ArborCraft window for this activity.<br>
+
+<center><img src="interpretations-dialog.png" alt="Attribute Weighting"><br></center>
+<br>
+<center><b>Figure 4</b> Alternative interpretation definition.</center><br>
+<br>
+
+On the left side of the window, an ambiguous requirement can be selected. The top right side can then be used to define interpretations for this particular requirement. The drop-down box contains all the interpretations that have been defined for the currently selected requirement. Also, stakeholder interest values, such as relevance or scope, can be defined for each interpretation.<br>
+<br>
+The final step of the ambiguity handling capability of ArborCraft is finding the optimal feature tree from the various interpretations. Figure 5 depicts the window for setting the optimisation parameters.<br>
+<br>
+In this window, the stakeholder interest value for which to optimise (maximise or minimise) is selected at the top. A number of restrictions can be created to ensure specific properties of the resulting feature tree, such as in this case that the scope value is large than 0.6. Finally, the optimisation strategy can be selected, which is either exhaustive or heuristic (faster but less accurate). After these steps, ArborCraft proceeds as usual to create the feature trees.<br>
+<center><img src="optimisation-dialog.png" alt="Attribute Weighting"><br></center>
+<br>
+<center><b>Figure 5</b> Setting the optimisation parameters.</center><br>
+<br>
+
+
+<a name="AttributeWeighting"><h3>Attribute Weighting</h3></a>
+If the Attribute weighting option is selected, you can guide the ArborCraft operation by providing hints about which requirements are likely to be similar (that is, which should be grouped into the same feature or features).  In order to do this, you can add annotations to the requirements document at the beginning of requirements with a line-break at the end of each one, like so:
+
+@bob
+The system should be secure and free from attack.
+
+@bob
+@110317
+Users must log in with a username and password.
+
+ArborCraft will then allow you to define a weighting for each annotation, as shown below. If ArborCraft finds two requirements which have the same annotation, it will weight their similarity based on the weighting set here, such that (given that the weighting is higher than 1.0) those requirements are more likely to be grouped together.  Examples of helpful usage scenarios might be:
+<ul>
+<li>Nathan always works on the same stuff; so annotate with authors and weight @nathan highly
+<li>We all worked on the same feature on 17th March; so annotate with date and weight @110317 highly
+<li>All the requirements in subsection 2.1 are closely coupled; so annotate with subsection and weight @2.1 highly
+<li>We know the feature breakdown already - so annotate with feature names!
+</ul>
+
+
+The annotations are completely custom - how you use them is limited only by your imagination!<br>
+<center><img src="attribute_weighting.png" alt="Attribute Weighting"><br></center>
+<br>
+<center><b>Figure 6</b> Setting the attribute weights.</center><br>
+<br>
+<br>
+<a name="FMP2DiVA"><h2>FMP2DiVA</h2></a> 
+The FMP2DiVA plugin is a simple tool for converting a FMP feature model, generated manually or via ArborCraftExt to a DiVA model. This conversion populates the DiVA model with candidate dimensions and variants. To active this tool, select the FMP model you wish to convert and and then activate FMP2DiVA via the context menu option or via the view toolbar item (see Figure 7).<br>
+<br>
+<center><img src="fmp2diva_context.png" alt="Context Menu"/>  <img src="fmp2diva_view.png"><br></center>
+<br>
+<center><b>Figure 7</b> FMP2DiVA is activated via the context-menu (left) or the view tool bar item (right).</center><br>
+<br>
+Once complete, FMP2DiVA will produce a DiVA model alongside the selected FMP model with the same name as that FMP model.<br>
+
+<a name="Normaliser"><h2>Feature Tree Normaliser</h2></a>
+This plugin is helper tool to allow the comparison of feature trees (see <a href="#Similarity">Feature Tree Similarity Analysis</a>). The tool ensures that every node in the selected feature tree has text associated with it. This allows the semantic comparison between features to be performed when calculating the feature tree similarity. For the this tool to be successfully run two requirements must be met (ArborCraftExt generated FMP models meet these requirements):
+<ul>
+<li>All leaf nodes in the selected feature tree must have some text associated with them.</li>
+<li>All nodes need to have a String attribute attached (see Figure 8) even if no text is assigned.</li>
+</ul>
+<center><img src="string_attribute.png" alt="String Attribute"/><br></center>
+<br>
+<center><b>Figure 8</b> The properties view attached to FMP model elements.</center><br>
+<br>
+<br>
+Activate the tool via the context menu or the view toolbar item (see Figure 9).<br>
+<br>
+<center><img src="normaliser_context.png" alt="Context Menu"/>  <img src="normaliser_view.png"><br></center>
+<br>
+<center><b>Figure 9</b> The Feature Tree Normaliser is activated via the context-menu (left) or the view tool bar item (right)</center><br>
+<br>
+<br>
+The output from this process is the selected FMP model normalised.<br>
+
+<a name="Similarity"><h2>Feature Tree Similarity Analysis</h2></a>
+The Feature Tree Similarity Analysis plugin compute the similarity of two selected FMP models. Various attributes are calculated in this similarity analysis including:
+<ul>
+<li>Semantic Similarity</li>
+<li>Structural Similarity</li>
+<li>Logical Similarity</li>
+</ul>
+The feature models being compared must be normalised as described by the <a href="#Normaliser">Feature Tree Normaliser</a>. To calculate the similarity select the two feature models you wish to compare and then activate the plugin via the context menu or view toolbar item (see Figure 10).<br>
+<br>
+<center><img src="similarity_context.png" alt="Context Menu"/>  <img src="similarity_view.png"><br></center>
+<br>
+<center><b>Figure 10</b> The Similarity Analysis is activated via the context-menu (left) or the view tool bar item (right)</center><br>
+<br>
+<br>
+Depending on the size of feature models being compared, this similarity by take a while to compute due to the semantic analysis being performed. To estimate how long (in seconds) the similarity will take simply multiply together the number of features in both trees. For example, if you have 10 features in one model and 12 in the other, the similarity will take approximately 120 seconds.<br>
+<br>
+Once complete, a new folder will be created in the root of your Eclipse project. In this new folder, a text file will have been created which contains a detailed breakdown of the similarity calculations for the two trees compared.
+
+
+<a name="Compare"><h2>DiVA Compare</h2></a>
+The purpose of the DiVA compare tool is to allow changes that have been made to be transferred back to the originating feature model. This ensures that the two models remain in-sync and consistent with each other. The changes transferred consist of:
+<ul>
+<li>DiVA Dimensions/Variants renamed.</li>
+<li>DiVA Dimensions/Variants deleted.</li>
+<li>DiVA Dimensions/Variants added.</li>
+</ul>
+Where corresponding features can be found in the feature model, the same actions will be applied to them. Ensuring the feature model and DiVA model remain in-sync with each other is important to ensure complete traceability from the DiVA model back to the requirements text.<br>
+<br>
+Another feature of this tool, which eases the navigation between the feature model and DiVA model, allows the corresponding elements in each model to be quickly found.<br>
+<br>
+To activate the DiVA compare tool first, select the two DiVA models that represent the initial version and subsequent version that has undergone change. The tool can then be selected via the context menu or the view toolbar (see Figure 11).<br>
+<br>
+<center><img src="divacompare_context.png" alt="Context Menu"/>  <img src="divacompare_view.png"><br></center>
+<br>
+<center><b>Figure 11</b> DiVA Compare is activated via the context-menu (left) or the view tool bar item (right).</center><br>
+<br>
+<br>
+Once the DiVA models have been compared, the tool requests that the relevant feature model is selected to which the changes should be applied. Simply just enter the partial name of the applicable FMP model for it to be displayed (see Figure 12).<br>
+<br>
+<center><img src="fmp_select.png" alt="Context Menu"/><br></center>
+<br>
+<center><b>Figure 12</b> FMP model selection.</center><br>
+<br>
+Once complete, the output will be an updated feature model.<br>
+<br>
+As mentioned above, this tool also allows the corresponding features model elements and DiVA model elements to be quickly found. To navigate between models, simply select the model element you wish to trace and activate the relevant context menu item (see Figure 13). The success of this relies on a DiVA model and FMP model with equivalent names (e.g. model.fmp and model.diva)<br>
+<br>
+<center><img src="find_diva.png" alt="Context Menu"/>  <img src="find_fmp.png"><br></center>
+<br>
+<center><b>Figure 13</b> Tracing elements from the FMP model to the DiVA model (left) or from the DiVA model to the FMP model (right).</center><br>
+<br>
+
+
+<a name="Simulation"><h2>DiVA Simulation Analysis</h2></a> 
+This tool takes advantage of the traceability offered by <a href="#Compare">DiVA Compare</a> and allows the text to be extracted from the requirements document that is related to the variants suggested in the DiVA simulation results. This allows further analysis of the simulation results to determine the appropriateness of the suggested configurations.<br>
+<br>
+To extract the requirements simply activate the plugin on the DiVA model that contains the relevant simulation results via the context menu or the view toolbar option (see Figure 14).<br>
+<br>
+<center><img src="apply_context.png" alt="Context Menu"/>  <img src="apply_view.png"><br></center>
+<br>
+<center><b>Figure 14</b> DiVA simulations can be applied via the context-menu (left) or the view tool bar item (right).</center><br>
+<br>
+You will then be asked to select which suggest configuration you wish to analyse further (see Figure 15).<br>
+<br>
+<center><img src="select.png" alt="Context Menu"/></center>
+<br>
+<center><b>Figure 15</b> Configuration selection.</center><br>
+<br>
+The subsequent step involves selecting the relevant FMP model from which the selected DiVA was generated from. The partial name of the FMP model can be entered for it to be displayed (see Figure 16).<br>
+<br>
+<center><img src="fmp_select.png" alt="Context Menu"/><br></center>
+<br>
+<center><b>Figure 16</b> FMP model selection.</center><br>
+<br>
+Finally, a filename must be entered to which the extracted requirements will be saved to (see Figure 17).<br>
+<br>
+<center><img src="save_req.png" alt="Context Menu"/><br></center>
+<br>
+<center><b>Figure 17</b> Saving the extracted requirements.</center><br>
+<br>
+The output from this process will be a text document (in the specified location) containing the requirements text that is relevant to the selected configuration.
+
+
+
+

@@ -4,7 +4,7 @@
 	<!-- Change this according to the computer running the script -->
 	 <property name="eclipse.native.version.name" value="linux_x86_64"/>
 	<property name="eclipse.native.archive.extension" value="tar.gz"/>
-	<property name="eclipse.native.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-linux-gtk-x86_64.tar.gz"/>
+	<property name="eclipse.native.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz"/>
 	<!-- <property name="eclipse.native.version.name" value="win32"/>
 		<property name="eclipse.native.archive.extension" value="zip"/>
 		<property name="eclipse.native.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.5.2-201002111343/eclipse-platform-3.5.2-win32.zip"/>
@@ -14,7 +14,7 @@
 	<!-- <property name="target.eclipse.dir" location="${env.WORKSPACE}/build/divastudio_${eclipse.version.name}_base"/> -->
 	<!-- <property name="target.eclipse.zip" location="${env.WORKSPACE}/build/divastudio_${eclipse.version.name}_base.zip"/> -->
 	<!-- <property name="eclipse.home" location="${eclipse.base.dir}/eclipse"/> -->
-	<property name="equinox.jar.filename" value="org.eclipse.equinox.launcher_1.1.0.v20100507.jar"/>
+	<property name="equinox.jar.filename" value="org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar"/>
 	<property name="eclipse.workspace.dir" location="${env.WORKSPACE}/eclipseworkspace"/>	
 	<property name="eclipse.build.dir" location="${env.WORKSPACE}/src"/>
 	<property name="eclipse.official.repository" value="http://download.eclipse.org/releases/helios"/>
@@ -29,7 +29,7 @@
 	<!-- <property name="purevariants.updatesite.repository" value="file:///${purevariants.local.repository}"/>-->
 	<!-- <property name="purevariants.updatesite.repository" value="http://tipimouss.irisa.fr/private_data/pure-variants-Updatesite-3.0.16"/>-->
 				
-	<target name="all" depends="">
+	<target name="all" depends=""> 
 		<!-- <antcall target="publish_purevariants_features_and_bundles"/> --> 
 		<!-- <antcall target="provision_${eclipse.native.version.name}_base_for_divastudio"/> -->
 	    <antcall target="provision_win32_base_for_divastudio"/>
@@ -37,7 +37,7 @@
 	    <antcall target="provision_macosx-cocoa_x86_64_base_for_divastudio"/>
 	    <antcall target="provision_macosx-cocoa_base_for_divastudio"/>
 		<antcall target="provision_linux_x86_64_base_for_divastudio"/>
-	    <antcall target="provision_linux_x86_base_for_divastudio"/> 
+	    <antcall target="provision_linux_x86_base_for_divastudio"/>
 		<antcall target="deploy_divastudio_bases"/>
 	</target>
 
@@ -46,7 +46,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="linux_x86_64"/>
 			<param name="archive.extension" value="tar.gz"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-linux-gtk-x86_64.tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk-x86_64.tar.gz"/>
 			<param name="target.os" value="linux"/>
 			<param name="target.ws" value="gtk"/>
 			<param name="target.arch" value="x86_64"/>
@@ -57,7 +57,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="linux_x86"/>
 			<param name="archive.extension" value="tar.gz"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-linux-gtk.tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-linux-gtk.tar.gz"/>
 			<param name="target.os" value="linux"/>
 			<param name="target.ws" value="gtk"/>
 			<param name="target.arch" value="x86"/>
@@ -69,7 +69,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="win32"/>
 			<param name="archive.extension" value="zip"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-win32.zip"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-win32.zip"/>
 			<param name="target.os" value="win32"/>
 			<param name="target.ws" value="win32"/>
 			<param name="target.arch" value="x86"/>
@@ -81,7 +81,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="win32_x86_64"/>
 			<param name="archive.extension" value="zip"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-win32-x86_64.zip"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-win32-x86_64.zip"/>
 			<param name="target.os" value="win32"/>
 			<param name="target.ws" value="win32"/>
 			<param name="target.arch" value="x86_64"/>
@@ -93,7 +93,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="macosx-cocoa_x86_64"/>
 			<param name="archive.extension" value="tar.gz"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-macosx-cocoa-x86_64.tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-macosx-cocoa-x86_64.tar.gz"/>
 			<param name="target.os" value="macosx"/>
 			<param name="target.ws" value="cocoa"/>
 			<param name="target.arch" value="x86_64"/>
@@ -104,7 +104,7 @@
 		<antcall target="provision_eclipse_version">
 			<param name="eclipse.version.name" value="macosx-cocoa"/>
 			<param name="archive.extension" value="tar.gz"/>
-			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.1-201009090800/eclipse-SDK-3.6.1-macosx-cocoa.tar.gz"/>
+			<param name="eclipse.base.url" value="http://eclipse.ialto.org/eclipse/downloads/drops/R-3.6.2-201102101200/eclipse-SDK-3.6.2-macosx-cocoa.tar.gz"/>
 			<param name="target.os" value="macosx"/>
 			<param name="target.ws" value="cocoa"/>
 			<param name="target.arch" value="x86"/>
@@ -122,9 +122,14 @@
 
 	<target name="get_dropins">
 		<mkdir dir="${env.WORKSPACE}/build/dropins/"/>
-		<get src="http://tipimouss.irisa.fr/private_data/ca.uwaterloo.gp.fmp_0.7.0.jar?root=divastudio" 
+		 
+		<!--<get src="http://gforge.inria.fr/scm/viewvc.php/*checkout*/trunk/thirdparty_plugins/ca.uwaterloo.gp.fmp_0.7.0.jar?root=divastudio" -->
+		<!--<get src="http://tipimouss.irisa.fr/private_data/ca.uwaterloo.gp.fmp_0.7.0.jar?root=divastudio"	 
 							dest="${env.WORKSPACE}/build/dropins/ca.uwaterloo.gp.fmp_0.7.0.jar"
-							usetimestamp="true"/>
+							usetimestamp="true"/>-->
+		<copy todir="${env.WORKSPACE}/build/dropins/">
+					<fileset file="${env.WORKSPACE}/divastudio_build_process/automation/create_studio_base/thirdparty_plugins/ca.uwaterloo.gp.fmp_0.7.0.jar"></fileset>
+				</copy>
 		
 	</target>
 	
@@ -180,17 +185,17 @@
 					<param name="target.eclipse.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}_base"/>
 		</antcall>
 		
-				<echo> FROM AJDT</echo>
+	<!--			<echo> FROM AJDT</echo>
 		<antcall target="provision_feature">
 		    		<param name="feature.name" value="org.eclipse.ajdt.feature.group, org.eclipse.contribution.weaving.feature.group, org.eclipse.contribution.xref.feature.group, org.eclipse.ajdt.pde.build.feature.group, org.eclipse.equinox.weaving.sdk.feature.group"/>
 					<param name="feature.repository" value="http://download.eclipse.org/tools/ajdt/36/update/"/>
 					<param name="target.eclipse.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}_base"/>
-		</antcall>
+		</antcall> -->
 
 					<echo> FROM ArborCraft </echo>
 		<antcall target="provision_feature">
 		    		<param name="feature.name" value="uk.ulancs.diva.ExtendedArborCraft.feature.feature.group"/>
-					<param name="feature.repository" value="http://www.comp.lancs.ac.uk/~greenwop/ArborCraft/"/>
+					<param name="feature.repository" value="http://www.comp.lancs.ac.uk/~greenwop/ArborCraft_v2/"/>
 					<param name="target.eclipse.dir" value="${env.WORKSPACE}/build/divastudio_helios_${eclipse.version.name}_base"/>
 		</antcall>
 		
@@ -353,6 +358,6 @@
 				       todir="kermeta_bot@scm.gforge.inria.fr:/home/groups/divastudio/htdocs/bundle/latest_build" 
 				       keyfile="${user.home}/.ssh/id_rsa"
 				       passphrase=""
-				  />
+				  /> 
 	</target>
 </project>

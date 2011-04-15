@@ -17,13 +17,37 @@
             </separator>
          </menu>
          <action
-               label="FMP2DiVA"
                class="uk.ulancs.diva.fmp2diva.popup.actions.FMP2DiVAAction"
-               menubarPath="ArborCraftExtension.menu1/group1"
                enablesFor="1"
-               id="uk.ulancs.diva.fmp2diva.newAction">
+               id="uk.ulancs.diva.fmp2diva.newAction2"
+               label="FMP2DiVA"
+               menubarPath="ArborCraftExtension.menu1/group1"
+               tooltip="Converts an FMP feature model to a DiVA model.">
          </action>
       </objectContribution>
    </extension>
+   
+   <extension point="org.eclipse.ui.viewActions"> 
+<viewContribution 
+      id="org.eclipse.ui.articles.action.contribution.view" 
+   targetID="org.eclipse.ui.views.ResourceNavigator">
+   <action
+         class="uk.ulancs.diva.fmp2diva.popup.actions.FMP2DiVAAction"
+         disabledIcon="icons/grey_dot.gif"
+         enablesFor="1"
+         icon="icons/black_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.view.action2"
+         label="FMP2DiVA"
+         toolbarPath="group1"
+         tooltip="Converts an FMP feature model to a DiVA model.">
+      <selection
+            class="org.eclipse.core.resources.IFile"
+            name="*.fmp">
+         </selection>
+      </action> 
+   </viewContribution> 
+</extension>
+   
+   
 
 </plugin>

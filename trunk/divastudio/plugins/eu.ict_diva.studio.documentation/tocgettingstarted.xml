@@ -4,12 +4,10 @@
 <toc label="Getting Started" link_to="toc.xml#gettingstarted"> 
 	
  <topic href="html/gettingstarted/DiVAProject.html" label="DiVA project">
-
  </topic>
-	<topic label="Main Topic"  href="html/gettingstarted/maintopic.html"> 
-		<topic label="Sub Topic" href="html/gettingstarted/subtopic.html" /> 
-	</topic>
-	<topic label="Main Topic 2">
-		<topic label="Sub Topic 2" href="html/gettingstarted/subtopic2.html" />
-	</topic> 
+ <topic label="Samples">
+      <anchor id="samples"/>
+   </topic>
+ <topic label="Web site" href="http://sites.google.com/site/divawebsite" /> 
+ <topic label="Developper site" href="http://developer.berlios.de/projects/diva-unix" />
 </toc>

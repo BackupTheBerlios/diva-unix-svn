@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.ui,
  diva.model;bundle-version="1.0.2",
  diva.model.edit;bundle-version="1.0.2",
  diva.model.editor;bundle-version="1.0.2",
- ca.uwaterloo.gp.fmp;bundle-version="0.7.0"
+ ca.uwaterloo.gp.fmp;bundle-version="0.7.0",
+ ulanc.framework.arborcraft.ext
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: lib/jgraphlayout.jar,

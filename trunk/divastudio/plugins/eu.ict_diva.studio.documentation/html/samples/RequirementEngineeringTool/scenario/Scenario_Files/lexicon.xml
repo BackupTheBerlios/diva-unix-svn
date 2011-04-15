@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lexicon>
+<word content="privilege" sem="A1.4+" nfr="access control" subnfr1="access-right" subnfr2="access-privilege" subnfr3="" />
+<word content="right" sem="S7.4+" nfr="access control" subnfr1="access-right" subnfr2="" subnfr3="" />
+<word content="variety" sem="A6.3+" nfr="alternative" subnfr1="" subnfr2="" subnfr3="" />
+<word content="concurrent" sem="T1.1.2" nfr="concurrency" subnfr1="" subnfr2="" subnfr3="" />
+<word content="parallel" sem="T1.1.2" nfr="concurrency" subnfr1="" subnfr2="" subnfr3="" />
+<word content="session" sem="N6+" nfr="concurrency" subnfr1="" subnfr2="" subnfr3="" />
+<word content="session" sem="T1.3" nfr="concurrency" subnfr1="" subnfr2="" subnfr3="" />
+<word content="correct" sem="A5.3+" nfr="correctness" subnfr1="" subnfr2="" subnfr3="" />
+<word content="correctness" sem="A5.3+" nfr="correctness" subnfr1="" subnfr2="" subnfr3="" />
+<word content="integrity" sem="G2.2+" nfr="correctness" subnfr1="" subnfr2="" subnfr3="" />
+<word content="available" sem="A3" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="failure" sem="X9.2-" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="fault" sem="A5.3-" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="recovery" sem="A5.1+" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="reliable" sem="A5.1+" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="resilience" sem="S1.2.5+" nfr="fault tolerance" subnfr1="" subnfr2="" subnfr3="" />
+<word content="legal" sem="G2.1" nfr="legal issues" subnfr1="" subnfr2="" subnfr3="" />
+<word content="additionally" sem="N5++" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="all" sem="N5.1+" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="also" sem="N5++" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="and" sem="Z5" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="besides" sem="Z5" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="depending" sem="RGAR" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="each" sem="N6+" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="include" sem="A1.8+" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="only" sem="DEXP" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="unless" sem="Z5" nfr="mandatory" subnfr1="" subnfr2="" subnfr3="" />
+<word content="bandwidth" sem="Q1.3" nfr="performance" subnfr1="network-usage" subnfr2="efficiency" subnfr3="" />
+<word content="delay" sem="T4-" nfr="performance" subnfr1="reaction-time" subnfr2="" subnfr3="" />
+<word content="bottleneck" sem="S8-" nfr="performance" subnfr1="reaction-time" subnfr2="" subnfr3="" />
+<word content="overload" sem="N5.2+" nfr="performance" subnfr1="scalability" subnfr2="scalability-load" subnfr3="" />
+<word content="performance" sem="K4" nfr="performance" subnfr1="performance-unspecified" subnfr2="" subnfr3="" />
+<word content="robustness" sem="S1.2.5+" nfr="performance" subnfr1="robustness" subnfr2="" subnfr3="" />
+<word content="backup" sem="S8+" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="database" sem="Y2" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="enrol" sem="S5+" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="retrieval" sem="A9+" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="storage" sem="A9+" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="storage" sem="A9-" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="store" sem="A9+" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="store" sem="A9-" nfr="persistence" subnfr1="" subnfr2="" subnfr3="" />
+<word content="reliability" sem="A5.1+" nfr="reliability" subnfr1="" subnfr2="" subnfr3="" />
+<word content="safety" sem="A15+" nfr="safety" subnfr1="" subnfr2="" subnfr3="" />
+<word content="allow" sem="S7.4+" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="attack" sem="E3-" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="authorise" sem="S7.4+" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="fraud" sem="G2.1-" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="log" sem="O2" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="log" sem="Y2" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="password" sem="Y2" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="permission" sem="S7.4+" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="restrict" sem="A1.7+" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="security" sem="G2.1" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="security" sem="G2.1" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="threat" sem="A15-" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="trust" sem="RMAT" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="unauthorise" sem="S7.4-" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="vulnerability" sem="S1.2.5-" nfr="security" subnfr1="" subnfr2="" subnfr3="" />
+<word content="real-time" sem="Y2" nfr="time constraint" subnfr1="" subnfr2="" subnfr3="" />
+<word content="gui" sem="Z99" nfr="ease of use" subnfr1="useability" subnfr2="" subnfr3="" />
+<word content="navigation" sem="RMOC" nfr="usability" subnfr1="" subnfr2="" subnfr3="" />
+<word content="user-friendly" sem="A1.5.1+" nfr="usability" subnfr1="" subnfr2="" subnfr3="" />
+<word content="choose" sem="RMAD" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="different" sem="RGAR" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="etc" sem="Z4" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="feature" sem="O4.1" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="following" sem="TSF" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="instance" sem="Z5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="like" sem="Z5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="may" sem="DMOD" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="or" sem="Z5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="period" sem="T1.3" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="preferred" sem="RMAL" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="several" sem="N5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="some" sem="N5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="subset" sem="N2" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="such" sem="Z5" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+<word content="type" sem="A4.1" nfr="variant" subnfr1="" subnfr2="" subnfr3="" />
+	<word content="server" sem="F1/S2mf" nfr="Device" subnfr1="" subnfr2="" subnfr3="" />
+	<word content="terminal" sem="M5/H1" nfr="Device" subnfr1="" subnfr2="" subnfr3="" />
+	<word content="smartphone" sem="Z99" nfr="Device" subnfr1="" subnfr2="" subnfr3="" />
+	<word content="iPhone" sem="Z99" nfr="Device" subnfr1="" subnfr2="" subnfr3="" />
+
+	<word content="telephone" sem="Q1.3" nfr="Device" subnfr1="" subnfr2="" subnfr3=""  />
+	<word content="workstation" sem="Y2" nfr="Device" subnfr1="" subnfr2="" subnfr3="" />
+<word content="when" sem="Z5" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3="" />
+
+<word content="adapt" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="adjust" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="advance" sem="RMOC" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="amend" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="alter" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="available" sem="A3+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="change" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="choose" sem="RMAD" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="context" sem="O4.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="correct" sem="A5.3+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="currently" sem="TSO" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="depending" sem="RGAR" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="develop" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="discover" sem="RREP" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="dynamically" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="improve" sem="A5.1+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="incorporate" sem="A1.8+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="locally" sem="N3.3-" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="look" sem="Q1.2" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="location-dependent" sem="Z99" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="mend" sem="A5.1+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="mobile" sem="Q1.3" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="modernise" sem="TSO/RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="modify" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="mutate" sem="Z5/A2.2" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="progress" sem="A5.1+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="recognise" sem="RMAF" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="redraft" sem="Z99" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="refurbish" sem="H5/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="reinstate" sem="I3.1/N6+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="renew" sem="T2+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="renovate" sem="A5.1+/A2.1/H1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="repair" sem="A5.1+/A2.1" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="replace" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="replenish" sem="RMOP/UNM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="restore" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""   />
+<word content="return" sem="RMOC" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="revamp" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="revise" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="rewrite" sem="Q1.2/N6+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="reword" sem="RCOT/UNM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="rework" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="revise" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="runtime" sem="Z99" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="service" sem="S8+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="substitute" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="swap" sem="S1.1.2+" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="transform" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="transmute" sem="RAFM" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="update" sem="TSO" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+<word content="vary" sem="RGAR" nfr="Adaptation" subnfr1="" subnfr2="" subnfr3=""  />
+</lexicon>
+

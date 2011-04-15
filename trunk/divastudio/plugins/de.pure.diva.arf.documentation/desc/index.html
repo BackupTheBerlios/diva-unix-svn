@@ -1,0 +1,160 @@
+<html>
+<head>
+<title>Adaptation Reasoning Framework</title>
+</head>
+<body>
+<div style="font-size: 10pt;"><span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-size: large;"><b>Adaptation Reasoning Framework</b></span></font></span></div>
+<span lang="EN-GB"><font face="arial, sans-serif">
+<div style="font-size: 10pt;"><span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-size: medium;"><b><br>
+</b></span></font></span></div>
+<div style="font-size: 10pt;"><span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-size: medium;"><b>Short description</b></span></font></span></div>
+<font size="2">
+The reasoning
+framework takes the actual context and the adaptation rules as input and does
+the reasoning to find and rank possible configurations for the particular
+context.</font></font></span><font face="arial, sans-serif" size="2">
+</font>
+<div><font face="arial, sans-serif" size="2"><br>
+</font></div>
+<div><font face="arial, sans-serif" size="2">The DiVA Reasoning Framework is a component
+integrated both at design-time and runtime. It consists of the framework
+itself, which provides</font></div>
+<div>
+<ul><li><font face="arial, sans-serif" size="2">an infrastructure <span lang="EN-GB">in order
+to reason on different DiVA problems</span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">a&nbsp;</span><span lang="EN-GB">management structure in
+order to manage several reasoners</span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">a&nbsp;</span><span lang="EN-GB">graphical user interface
+in order to reason and run a simulation at design-time</span></font></li></ul>
+<div><font face="arial, sans-serif" size="2">
+<p><span lang="EN-GB">The DiVA Reasoning Framework includes
+several reasoners, which are able to</span></p>
+<ul>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">reason on the different DiVA problems with the help of reasoning engines, e.g. SAT solver</span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB"><span lang="EN-GB">optimise reasoning and
+reduce exponential growth by DiVA Optimiser, e.g. Random Optimiser</span></span></font></li></ul>
+</font>
+<div><font face="arial, sans-serif" size="2">
+<p><span lang="EN-GB">The DiVA Reasoning Framework maps DiVA problems to different questions, which provide</span><font face="arial, sans-serif" size="2"> (within a definable amount of time)</font></p>
+<ul><li>checking the existence of at least one configuration<br>
+</li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">getting the first configuration<br>
+</span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB"><span lang="EN-GB">getting the best configuration</span></span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB"><span lang="EN-GB">getting all configurations<br>
+</span></span></font></li></ul>
+
+</font></div>
+</div>
+</div>
+<div>
+<div>
+<div style="font-family: arial,sans-serif;"><font size="3"><b>Technical Characteristics</b></font></div>
+<div><span lang="EN-GB"><font face="arial, sans-serif" size="2"><span lang="EN-GB">DiVA
+Reasoning Framework has the following technical characteristics for the
+design-time part</span>:</font></span></div>
+<div>
+<ul><li><span lang="EN-GB"><font face="arial, sans-serif" size="2">it runs under the Eclipse
+version Helios (3.6.1)</font></span></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">it needs&nbsp;</span><span lang="EN-GB">the following
+Eclipse plug-ins:</span></font></li>
+<ul><li><span lang="EN-GB"><font face="arial, sans-serif" size="2">EMF</font></span></li>
+<li><span lang="EN-GB"><font face="arial, sans-serif" size="2"><a href="http://www.eclipse.org/modeling/emft/featuremodel/" target="_blank">EMF Feature Model (0.7.0)</a><br>
+</font></span></li></ul></ul>
+<font face="arial, sans-serif" size="2"><span lang="EN-GB">DiVA
+Reasoning Framework has the following technical characteristics for the runtime
+part:</span></font></div>
+<div>
+<ul><li><font face="arial, sans-serif" size="2">it runs&nbsp;<span lang="EN-GB">under OSGi R4</span></font></li>
+<li><font face="arial, sans-serif" size="2"><span lang="EN-GB">it needs&nbsp;</span><span lang="EN-GB">the following Eclipse
+plug-ins (integrated at runtime):</span></font></li>
+<ul><li><span lang="EN-GB"><font face="arial, sans-serif" size="2">EMF</font></span></li>
+<li><span lang="EN-GB"><font face="arial, sans-serif" size="2"><a href="http://www.eclipse.org/modeling/emft/featuremodel/" target="_blank">EMF Feature Model</a></font></span></li></ul></ul>
+</div>
+</div>
+<div>
+<div style="text-align: left;">
+</div>
+<span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-family: Arial,Verdana,sans-serif;">
+<div style="display: block; margin-right: auto; margin-left: auto; text-align: center;">
+<div style="text-align: left;"><span lang="EN-GB"><font face="arial, sans-serif">
+<div><font size="3"><b>Tutorial</b></font></div>
+</font></span></div>
+<span lang="EN-GB"><font face="arial, sans-serif">
+</font></span>
+<div style="text-align: left;">In the tutorial reasoning <span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-family: Arial,Verdana,sans-serif;"> at design-time </span></font></span>will be limited to the problem in order to get the best configuration within two seconds. This means<br>
+</div>
+<ol style="text-align: left;"><li>starting reasoning on the DiVA adaptation model,</li>
+<li>receiving one configuration after another,</li>
+<li>ranking them,<br>
+</li>
+<li>stopping after matching the deadline of two seconds and<br>
+</li>
+<li>returning one configuration<span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif"><span style="font-family: Arial,Verdana,sans-serif;">, which is the best which can be found within two seconds<br>
+</span></font></span></li>
+</ol>
+<div style="text-align: left;">
+The next figure shows the menu path in the DiVA studio to forward the appropriate question to the reasoning framework.<br>
+</div>
+<br>
+<a href="./images/Menu_Best.gif?attredirects=0"><img src="./images/Menu_Best.gif?height=298&amp;width=800" border="0" height="298" width="800"></a><br>
+<br>
+<div style="text-align: left;">
+At first the timeout is set to two seconds but no logging is needed. As also shown in by the next figure the user is able to select one reasoner.<br>
+</div>
+<br>
+<a href="./images/Input_Best.gif?attredirects=0"><img src="./images/Input_Best.gif?height=292&amp;width=800" border="0" height="292" width="800"></a><br>
+<br>
+<div style="text-align: left;">
+After choosing a reasoner reasoning on the adaptation model can be started. Afterwards the reasoning result will be presented to the user.<br>
+</div>
+<br>
+<div style="text-align: left;">
+The next figure shows the result dialog (left) after getting the best configuration within two seconds for each context. Also all valid configurations with their scores are presented in the “Simulation Output Viewer” (right).<br>
+</div>
+<br>
+<a href="./images/Result_Best_SAT.gif?attredirects=0"><img src="./images/Result_Best_SAT.gif?height=264&amp;width=800" border="0" height="264" width="800"></a><br>
+<br>
+<div style="text-align: left;">
+In order to get the first configuration or all configurations or to check if there are configurations available, the reasoning framework provides the appropriate questions via the same menu.<br>
+</div>
+<br>
+<div style="text-align: left;"><span lang="EN-GB"><font face="arial, sans-serif">
+<div><font size="3"><b>More Information</b></font></div>
+</font></span></div>
+<div style="text-align: left;"><span style="font-size: 10pt;" lang="EN-GB"><font face="arial, sans-serif">Detailed information how the reasoning framewok can be integrated in the runtime part can be found here:</font></span></div>
+</div>
+</span></font></span></div>
+</div>
+<hr width="75%" color="#ff0000" size="4" />
+<div style="text-align: left;"><font face="courier new,monospace"><code>public Resource reason(Resource model, Resource context) {</code><br>
+<code>&nbsp; // creation of model handle with variability model</code><br>
+<code>&nbsp; ModelHandle mhandle = new arf.ModelHandle(model);</code><br>
+<code>&nbsp; // creation of input handle with context</code><br>
+<code>&nbsp; InputHandle ihandle = new arf.InputHandle(context, null);</code><br>
+<code>&nbsp; // creation of a handle for GET_ONE_VALID_CONFIGURATION-question</code><br>
+<code>&nbsp; QuestionHandle qhandle = new arf.question.QuestionHandle(service.arf.ARF.QUESTIONS.GET_ONE_VALID_CONFIGURATION);</code><br>
+<code>&nbsp; // setting TIME-parameter of question handle to 60 seconds</code><br>
+<code>&nbsp; qhandle.getParameters().TIME_CONSUMPTION = new Long(60000);</code><br>
+<br>
+<code>&nbsp; // creation of a local ARF</code><br>
+<code>&nbsp; ARF arf = new ARF();</code><br>
+<code>&nbsp; // setting model handle to the ARF</code><br>
+<code>&nbsp; arf.setModel(mhandle);</code><br>
+<code>&nbsp; // setting input handle to the ARF</code><br>
+<code>&nbsp; arf.setInput(ihandle);</code><br>
+<code>&nbsp; </code><br>
+<code>&nbsp; // asking question to the ARF</code><br>
+<code>&nbsp; Result result = arf.ask(qhandle);</code><br>
+<code>&nbsp; </code><br>
+<code>&nbsp; // casting result to question-dependent result</code><br>
+<code>&nbsp; ConfigurationResult cresult = (ConfigurationResult) result;</code><br>
+<code>&nbsp; // getting first configuration from result</code><br>
+<code>&nbsp; Resource configuration = cresult.getAnswer().size() == 0 ? null : cresult.getAnswer().get(0);</code><br>
+<code>&nbsp; </code><br>
+<code>&nbsp; return configuration;</code><br>
+<code>}</code><br>
+</font></div>
+<hr width="75%" color="#ff0000" size="4" />
+</body>
+</html>

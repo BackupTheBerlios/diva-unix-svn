@@ -4,19 +4,19 @@
    <extension
          point="org.eclipse.ui.newWizards">
 		<category
-            id="diva.tools.category"
-            name="DiVA Tools"
+            id="diva.runtime.category"
+            name="DiVA Runtime"
             parentCategory="org.eclipse.ui.Examples"/>
       
       	<wizard
             canFinishEarly="true"
-            category="org.eclipse.ui.Examples/diva.tools.category"
+            category="org.eclipse.ui.Examples/diva.runtime.category"
             class="eu.ict_diva.causallink.deployer.ui.wizards.CausallinkRuntimeToolsBinExampleWizard"
             finalPerspective="org.eclipse.ui.resourcePerspective"
             hasPages="false"
             icon="icons/DivaIcon16.gif"
             id="eu.ict_diva.causallink.deployer.ui.wizards"
-            name="Runtime (Causal connection) Tools"/>
+            name="DiVA Runtime Causal connection Tools"/>
    </extension>
 
 </plugin>

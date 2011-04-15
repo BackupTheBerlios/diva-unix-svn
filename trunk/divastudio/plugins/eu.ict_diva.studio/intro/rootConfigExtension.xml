@@ -2,8 +2,8 @@
 <introContent>
   	<extensionContent id="euictdivastudio-introExtension" style="css/rootConfigExtension.css" name="DiVA intro Extension" path="root/head-anchor">
 		<group style-id="content-group" id="euictdivastudio-introLink-group">
-       		<link label="DiVA project" url="http://www.ict-diva.eu" id="euictdivastudio-introLink" style-id="content-link">
-          		<text>http://www.ict-diva.eu</text>
+       		<link label="DiVA project" url="http://developer.berlios.de/projects/diva-unix" id="euictdivastudio-introLink" style-id="content-link">
+          		<text>http://developer.berlios.de/projects/diva-unix</text>
        		</link>
        	</group>
   	</extensionContent>

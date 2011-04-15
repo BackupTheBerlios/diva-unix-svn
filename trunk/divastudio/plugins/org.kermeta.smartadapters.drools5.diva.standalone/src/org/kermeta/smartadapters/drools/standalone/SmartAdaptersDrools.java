@@ -46,11 +46,11 @@ public class SmartAdaptersDrools {
 			String artURI = args[0];
 			String wovenArtURI = args[1];
 			String aspectURI = args[2];
-			
+
 			System.out.println("base: "+artURI);
 			System.out.println("aspect: "+aspectURI);
 			System.out.println("woven: "+wovenArtURI);
-			
+
 			SmartAdaptersDrools sad = new SmartAdaptersDrools();
 
 			System.out.println("Loading base model...");
@@ -69,6 +69,36 @@ public class SmartAdaptersDrools {
 			System.out.println("Done!");
 
 			artURI = wovenArtURI;
+		} else if (args.length >= 3){
+			String artURI = args[0];
+			String wovenArtURI = args[1];
+
+			for(int i = 2; i<args.length; i++){
+				String aspectURI = args[i];
+
+				System.out.println("base: "+artURI);
+				System.out.println("aspect: "+aspectURI);
+				System.out.println("woven: "+wovenArtURI);
+
+				SmartAdaptersDrools sad = new SmartAdaptersDrools();
+
+				System.out.println("Loading base model...");
+				sad.loadArtModel(artURI);
+				System.out.println("Done!");
+				System.out.println();
+
+
+				System.out.println("Processing aspect ");
+				sad.process(aspectURI);
+				System.out.println("Done!");
+
+				System.out.println();
+				System.out.println("Saving woven model...");
+				sad.saveArtModel(wovenArtURI, sad.resource);
+				System.out.println("Done!");
+
+				artURI = wovenArtURI;
+			}
 		}
 	}
 

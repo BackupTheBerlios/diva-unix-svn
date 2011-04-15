@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="455"
+   height="295"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.47 r22583"
+   version="1.0"
+   sodipodi:docname="splashScreen.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="E:\DivaStudio\eclipse\plugins\org.eclipse.platform_3.3.101.v200809111700\splash.bmp.png"
+   inkscape:export-xdpi="97.006332"
+   inkscape:export-ydpi="97.006332">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 147.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="455 : 147.5 : 1"
+       inkscape:persp3d-origin="227.5 : 98.333333 : 1"
+       id="perspective25" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3211">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3213" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3215" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3203">
+      <stop
+         style="stop-color:#f5c917;stop-opacity:1;"
+         offset="0"
+         id="stop3205" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop3207" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3203"
+       id="linearGradient3209"
+       x1="-247.14287"
+       y1="162.14284"
+       x2="-169.28572"
+       y2="83.571419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(5.8256882,0,0,3.7454546,1230.4916,-304.44151)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3211"
+       id="linearGradient3217"
+       x1="-247.14287"
+       y1="162.14284"
+       x2="-169.28572"
+       y2="83.571419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(5.8256882,0,0,3.7454546,1230.4916,-304.44151)" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="241.28912"
+     inkscape:cy="128.45004"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     width="455px"
+     height="295px"
+     borderlayer="true"
+     inkscape:window-width="748"
+     inkscape:window-height="628"
+     inkscape:window-x="133"
+     inkscape:window-y="80"
+     showgrid="false"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <image
+       sodipodi:absref="C:\Users\dvojtise\workspaces\diva\divastudio\plugins\eu.ict_diva.studio\images\DivaLogo.jpg"
+       xlink:href="DivaLogo.jpg"
+       inkscape:export-ydpi="600"
+       inkscape:export-xdpi="600"
+       width="451.93381"
+       height="157.47705"
+       id="image2206"
+       x="1.3174076"
+       y="0.59389794" />
+    <text
+       xml:space="preserve"
+       style="font-size:73.48596191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="246.86557"
+       y="203.90912"
+       id="text2170"
+       transform="scale(0.9293474,1.0760238)"><tspan
+         sodipodi:role="line"
+         id="tspan2172"
+         x="246.86557"
+         y="203.90912">Studio</tspan></text>
+    <image
+       y="52.020252"
+       x="202.68027"
+       id="image2181"
+       height="24.31978"
+       width="42.137035"
+       sodipodi:absref="C:\Documents and Settings\dvojtise\Mes documents\Mes images\FP7-logo.jpg"
+       xlink:href="C:\Documents and Settings\dvojtise\Mes documents\Mes images\FP7-logo.jpg" />
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="77.781746"
+       y="272.77664"
+       id="text2202"><tspan
+         sodipodi:role="line"
+         id="tspan2204"
+         x="77.781746"
+         y="272.77664">DYNAMIC VARIABILITY IN COMPLEX, ADAPTIVE SYSTEMS</tspan></text>
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2215"
+       width="129.28572"
+       height="93.571426"
+       x="-277.14285"
+       y="51.42857" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2217"
+       width="32.857143"
+       height="30"
+       x="-171.42857"
+       y="121.42857" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2219"
+       width="54.285713"
+       height="53.57143"
+       x="-287.85715"
+       y="52.142857" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path2221"
+       sodipodi:cx="-232.14285"
+       sodipodi:cy="88.571426"
+       sodipodi:rx="5.7142859"
+       sodipodi:ry="32.142857"
+       d="M -226.42857 88.571426 A 5.7142859 32.142857 0 1 1  -237.85714,88.571426 A 5.7142859 32.142857 0 1 1  -226.42857 88.571426 z" />
+  </g>
+</svg>

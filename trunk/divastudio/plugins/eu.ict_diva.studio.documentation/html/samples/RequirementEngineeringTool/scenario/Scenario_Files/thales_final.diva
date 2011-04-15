@@ -1,0 +1,1495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diva:VariabilityModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diva="http://www.diva.org/diva">
+  <model xsi:type="diva:BaseModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/base/thales.base.art"/>
+  <context xsi:type="diva:EnumVariable" name="AlertLevel" id="ALERTLV">
+    <literal name="Normal" id="NORM"/>
+    <literal name="High" id="HIGH"/>
+    <literal name="Low" id="LOW"/>
+    <literal name="Medium" id="MED"/>
+    <literal name="VeryHigh" id="VHIGH"/>
+  </context>
+  <context xsi:type="diva:BooleanVariable" name="FailedAuthentication" id="FAUTH"/>
+  <context xsi:type="diva:EnumVariable" name="Crisis Location" id="CRLOC">
+    <literal name="Runway 1" id="RUN1"/>
+    <literal name="Runway 2" id="RUN2"/>
+    <literal name="Terminal 1" id="TERM1"/>
+    <literal name="Terminal 2" id="TERM2"/>
+    <literal name="InnerFourCourt" id="INN"/>
+    <literal name="Parking A" id="PARK1"/>
+    <literal name="Parking B" id="PARK2"/>
+  </context>
+  <context xsi:type="diva:BooleanVariable" name="PhysicalDamages" id="DAMAGES"/>
+  <context xsi:type="diva:EnumVariable" name="UserLocation" id="USERLOC">
+    <literal name="InControlRoom" id="INCR"/>
+    <literal name="OutControlRoom" id="OUTCR"/>
+  </context>
+  <context xsi:type="diva:BooleanVariable" name="ExistenceFingerPrintReader" id="FINGERREAD"/>
+  <context xsi:type="diva:EnumVariable" name="RescuerRole" id="RESROLE">
+    <literal name="PhysicalRescuer" id="PHYSICAL"/>
+    <literal name="MedicalRescuer" id="MEDICAL"/>
+    <literal name="Observer" id="OBSERVER"/>
+  </context>
+  <context xsi:type="diva:BooleanVariable" name="RequiredInformationExtPeople" id="INFO"/>
+  <context xsi:type="diva:BooleanVariable" name="Victims" id="VICTIMS"/>
+  <context xsi:type="diva:BooleanVariable" name="RequiredEscalation" id="ESC"/>
+  <context xsi:type="diva:BooleanVariable" name="SuspiciousBehavior" id="SUSPBEHAV"/>
+  <context xsi:type="diva:EnumVariable" name="CrisisType" id="CRTYPE">
+    <literal name="Fire" id="FIRE"/>
+    <literal name="AirportAttack" id="ATTACK"/>
+    <literal name="Chimical spill" id="CHEMSPILL"/>
+    <literal name="Explosion" id="EXPL"/>
+    <literal name="CriticalWeather" id="WEATHER"/>
+    <literal name="NaturalCatastrophy" id="CATAS"/>
+    <literal name="NULL" id="NULL"/>
+  </context>
+  <context xsi:type="diva:EnumVariable" name="InnerFourCourtUser" id="COURTUSER">
+    <literal name="Personnel" id="PERS"/>
+    <literal name="Temporary" id="TEMP"/>
+  </context>
+  <context xsi:type="diva:BooleanVariable" name="Default" id="DEFAULT"/>
+  <property name="Security" id="SEC" direction="1">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <property name="RescueCapacity" id="RESCAPA" direction="1">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <property name="RescueResponseTime" id="RESTIME">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <property name="Traceability" id="TRACE" direction="1">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <property name="InformationQuality" id="IQ" direction="1">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <property name="Confidentiality" id="CONF" direction="1">
+    <literal name="Unprotected" id="CONF_Unprotected" value="-2"/>
+    <literal name="Restricted" id="CONF_Restricted"/>
+    <literal name="Airport restricted" id="CONF_Airport" value="1"/>
+    <literal name="Confidential Minestry" id="CONF_Minestry" value="3"/>
+    <literal name="Confidential Defence" id="CONF_Defence" value="5"/>
+  </property>
+  <property name="NetworkLatency" id="LAT">
+    <literal name="-"/>
+    <literal name="Very Low" value="1"/>
+    <literal name="Low" value="2"/>
+    <literal name="Medium" value="3"/>
+    <literal name="High" value="4"/>
+    <literal name="Very High" value="5"/>
+  </property>
+  <dimension name="Organization" id="ORG" property="//@property.5 //@property.3" upper="-1">
+    <variant name="Hospital" id="HOSP" weaveLevel="30">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Organization/Hospital.smARText"/>
+      <propertyValue property="//@property.0" value="3"/>
+      <propertyValue property="//@property.5" value="1"/>
+      <propertyValue property="//@property.3" value="1"/>
+      <dependency text=""/>
+      <available text="VICTIMS">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.8"/>
+      </available>
+      <required text="VICTIMS">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.8"/>
+      </required>
+    </variant>
+    <variant name="FireDepartment" id="FIREDEP" weaveLevel="30">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Organization/FireDepartment.smARText"/>
+      <propertyValue property="//@property.0" value="3"/>
+      <propertyValue property="//@property.5" value="1"/>
+      <propertyValue property="//@property.3" value="1"/>
+      <dependency text=""/>
+      <available text="CRTYPE=FIRE or CRTYPE=EXPL or DAMAGES or CRTYPE=WEATHER or CRTYPE=CATAS">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.0"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+          <term xsi:type="diva:BooleanTerm" variable="//@context.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.4"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+        </term>
+      </available>
+      <required text="CRTYPE=FIRE or DAMAGES or CRTYPE=EXPL or CRTYPE=WEATHER or CRTYPE=CATAS">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.0"/>
+          <term xsi:type="diva:BooleanTerm" variable="//@context.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.4"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+        </term>
+      </required>
+    </variant>
+    <variant name="PoliceOffice" id="POLICE" weaveLevel="30">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Organization/PoliceOffice.smARText"/>
+      <propertyValue property="//@property.0" value="4"/>
+      <propertyValue property="//@property.5" value="3"/>
+      <propertyValue property="//@property.3" value="4"/>
+      <dependency text=""/>
+      <available text="CRTYPE=ATTACK or SUSPBEHAV">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          <term xsi:type="diva:BooleanTerm" variable="//@context.10"/>
+        </term>
+      </available>
+      <required text="CRTYPE=ATTACK or SUSPBEHAV">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          <term xsi:type="diva:BooleanTerm" variable="//@context.10"/>
+        </term>
+      </required>
+    </variant>
+    <variant name="Minestry" id="MINESTRY" weaveLevel="30">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Organization/Minestry.smARText"/>
+      <propertyValue property="//@property.5" value="3"/>
+      <propertyValue property="//@property.3" value="1"/>
+      <dependency text=""/>
+      <available text="ESC">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.9"/>
+      </available>
+      <required text="ESC">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.9"/>
+      </required>
+    </variant>
+    <variant name="TVChannel" id="TV" weaveLevel="30">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Organization/TVChannel.smARText"/>
+      <propertyValue property="//@property.5"/>
+      <propertyValue property="//@property.3" value="1"/>
+      <dependency text=""/>
+      <available text="INFO">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.7"/>
+      </available>
+      <required text="INFO">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.7"/>
+      </required>
+    </variant>
+  </dimension>
+  <dimension name="Notification" id="ORGRK" property="//@property.6 //@property.5 //@property.1 //@property.2" upper="1" lower="1">
+    <variant name="DefaultNotificationStrategy" id="DEFAULTRK" weaveLevel="40">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Notification/DefaultNotificationStrategy.smARText"/>
+      <propertyValue property="//@property.6" value="2"/>
+      <propertyValue property="//@property.5" value="1"/>
+      <propertyValue property="//@property.1" value="2"/>
+      <propertyValue property="//@property.2" value="4"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="not (ALERTLV=HIGH or ALERTLV=VHIGH)">
+        <term xsi:type="diva:NotTerm">
+          <term xsi:type="diva:OrTerm">
+            <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+            <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.4"/>
+          </term>
+        </term>
+      </required>
+    </variant>
+    <variant name="EmergencyNotificationStrategy" id="EMERGRK" weaveLevel="40">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Notification/EmergencyNotificationStrategy.smARText"/>
+      <propertyValue property="//@property.6" value="4"/>
+      <propertyValue property="//@property.5"/>
+      <propertyValue property="//@property.1" value="4"/>
+      <propertyValue property="//@property.2" value="2"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=HIGH or ALERTLV=VHIGH">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.4"/>
+        </term>
+      </required>
+    </variant>
+  </dimension>
+  <dimension name="SensorDeploymentStrategy" id="DEPLOYMENTSTRATEGY" property="//@property.4" upper="1" lower="1">
+    <variant name="FireStrategy" id="FIRESTRATEGY" weaveLevel="3">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/SensorDeploymentStrategy/FireStrategy.smARText"/>
+      <propertyValue property="//@property.4" value="5"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="CRTYPE=FIRE">
+        <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.0"/>
+      </required>
+    </variant>
+    <variant name="AttackStrategy" id="ATTACKSTRATEGY" weaveLevel="3">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/SensorDeploymentStrategy/AttackStrategy.smARText"/>
+      <propertyValue property="//@property.4" value="4"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="CRTYPE=ATTACK">
+        <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+      </required>
+    </variant>
+    <variant name="EnergySaving" id="ENERGYSAVE" weaveLevel="3">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/SensorDeploymentStrategy/EnergySaving.smARText"/>
+      <propertyValue property="//@property.4" value="2"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="CRTYPE=NULL">
+        <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.6"/>
+      </required>
+    </variant>
+  </dimension>
+  <dimension name="Planner" id="PLANNER" property="//@property.4" upper="-1">
+    <variant name="FirePlanner" id="FIREPLANNER" weaveLevel="10">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Planner/FirePlanner.smARText"/>
+      <propertyValue property="//@property.4" value="3"/>
+      <dependency text=""/>
+      <available text="CRTYPE=FIRE or CRTYPE=EXPL or CRTYPE=CATAS">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.0"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+        </term>
+      </available>
+      <required text="CRTYPE=FIRE or CRTYPE=EXPL or CRTYPE=EXPL or CRTYPE=CATAS">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.0"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+        </term>
+      </required>
+    </variant>
+    <variant name="MedicalPlanner" id="MEDICPLANNER" weaveLevel="10">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Planner/MedicalPlanner.smARText"/>
+      <propertyValue property="//@property.4" value="3"/>
+      <dependency text=""/>
+      <available text="VICTIMS">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.8"/>
+      </available>
+      <required text="VICTIMS">
+        <term xsi:type="diva:BooleanTerm" variable="//@context.8"/>
+      </required>
+    </variant>
+    <variant name="NewsPlanner" id="NEWSPLANNER" weaveLevel="10">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Planner/NewsPlanner.smARText"/>
+      <propertyValue property="//@property.4" value="3"/>
+      <dependency text=""/>
+      <available text="INFO and (CRTYPE=EXPL or CRTYPE=CATAS or CRTYPE=ATTACK)">
+        <term xsi:type="diva:AndTerm">
+          <term xsi:type="diva:BooleanTerm" variable="//@context.7"/>
+          <term xsi:type="diva:OrTerm">
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          </term>
+        </term>
+      </available>
+      <required text="INFO and (CRTYPE=EXPL or CRTYPE=CATAS or CRTYPE=ATTACK)">
+        <term xsi:type="diva:AndTerm">
+          <term xsi:type="diva:BooleanTerm" variable="//@context.7"/>
+          <term xsi:type="diva:OrTerm">
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+            <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          </term>
+        </term>
+      </required>
+    </variant>
+    <variant name="TacticalPicturePlanner" id="TACPICPLANNER" weaveLevel="10">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Planner/TacticalPicturePlanner.smARText"/>
+      <propertyValue property="//@property.4" value="4"/>
+      <dependency text=""/>
+      <available text="CRTYPE=ATTACK or CRTYPE=CATAS or ALERTLV=HIGH or ALERTLV=VHIGH">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.4"/>
+        </term>
+      </available>
+      <required text="CRTYPE=ATTACK or CRTYPE=CATAS or ALERTLV=HIGH or ALERTLV=VHIGH">
+        <term xsi:type="diva:OrTerm">
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.5"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+          <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.4"/>
+        </term>
+      </required>
+    </variant>
+    <variant name="TerrorismPlanner" id="TERRPLANNER" weaveLevel="10">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Planner/TerrorismPlanner.smARText"/>
+      <propertyValue property="//@property.4" value="4"/>
+      <dependency text=""/>
+      <available text="CRTYPE=ATTACK">
+        <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+      </available>
+      <required text="CRTYPE=ATTACK">
+        <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+      </required>
+    </variant>
+  </dimension>
+  <dimension name="Logging" id="LOG" property="//@property.0 //@property.6 //@property.3" upper="1" lower="1">
+    <variant name="Normal" id="NORMLOG" weaveLevel="2">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Logging/Normal.smARText"/>
+      <propertyValue property="//@property.0" value="1"/>
+      <propertyValue property="//@property.6" value="5"/>
+      <propertyValue property="//@property.4" value="1"/>
+      <propertyValue property="//@property.3" value="1"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=NORM">
+        <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.0"/>
+      </required>
+    </variant>
+    <variant name="Critical" id="CRITLOG" weaveLevel="2">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Logging/Critical.smARText"/>
+      <propertyValue property="//@property.0" value="3"/>
+      <propertyValue property="//@property.6" value="3"/>
+      <propertyValue property="//@property.4" value="3"/>
+      <propertyValue property="//@property.3" value="3"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=HIGH">
+        <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+      </required>
+    </variant>
+    <variant name="Warning" id="WARLOG" weaveLevel="2">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Logging/Warning.smARText"/>
+      <propertyValue property="//@property.0" value="2"/>
+      <propertyValue property="//@property.6" value="4"/>
+      <propertyValue property="//@property.4" value="2"/>
+      <propertyValue property="//@property.3" value="2"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=LOW">
+        <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.2"/>
+      </required>
+    </variant>
+    <variant name="Push" id="PUSHLOG" weaveLevel="2">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Logging/Push.smARText"/>
+      <propertyValue property="//@property.0" value="4"/>
+      <propertyValue property="//@property.6" value="2"/>
+      <propertyValue property="//@property.4" value="4"/>
+      <propertyValue property="//@property.3" value="4"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=MED">
+        <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.3"/>
+      </required>
+    </variant>
+    <variant name="PushBroadcast" id="BROALOG" weaveLevel="2">
+      <model xsi:type="diva:AspectModel" uri="platform:/resource/CrisisManagement_MagicReview/3_architecture/aspects/Logging/PushBroadcast.smARText"/>
+      <propertyValue property="//@property.0" value="5"/>
+      <propertyValue property="//@property.6" value="1"/>
+      <propertyValue property="//@property.4" value="5"/>
+      <propertyValue property="//@property.3" value="5"/>
+      <dependency text=""/>
+      <available text=""/>
+      <required text="ALERTLV=VHIGH">
+        <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.4"/>
+      </required>
+    </variant>
+  </dimension>
+  <rule xsi:type="diva:PriorityRule" name="High alert" id="hIGHalt">
+    <context text="ALERTLV=HIGH">
+      <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.1"/>
+    </context>
+    <priority property="//@property.0" priority="4"/>
+    <priority property="//@property.5" priority="4"/>
+    <priority property="//@property.6" priority="2"/>
+    <priority property="//@property.4" priority="4"/>
+    <priority property="//@property.3" priority="4"/>
+    <priority property="//@property.1" priority="5"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="Explosion" id="EXPLR">
+    <context text="CRTYPE=EXPL">
+      <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.3"/>
+    </context>
+    <priority property="//@property.0" priority="4"/>
+    <priority property="//@property.3" priority="4"/>
+    <priority property="//@property.4" priority="4"/>
+    <priority property="//@property.5" priority="3"/>
+    <priority property="//@property.6" priority="2"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="Low alert" id="LowAlt">
+    <context text="ALERTLV=NORM">
+      <term xsi:type="diva:EnumTerm" variable="//@context.0" value="//@context.0/@literal.0"/>
+    </context>
+    <priority property="//@property.0" priority="3"/>
+    <priority property="//@property.5" priority="1"/>
+    <priority property="//@property.6" priority="4"/>
+    <priority property="//@property.4" priority="2"/>
+    <priority property="//@property.3" priority="2"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="User in control room" id="INCRR">
+    <context text="USERLOC=INCR">
+      <term xsi:type="diva:EnumTerm" variable="//@context.4" value="//@context.4/@literal.0"/>
+    </context>
+    <priority property="//@property.0" priority="2"/>
+    <priority property="//@property.5" priority="2"/>
+    <priority property="//@property.6"/>
+    <priority property="//@property.4"/>
+    <priority property="//@property.3"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="User out control room" id="OUTCRR">
+    <context text="USERLOC=OUTCR">
+      <term xsi:type="diva:EnumTerm" variable="//@context.4" value="//@context.4/@literal.1"/>
+    </context>
+    <priority property="//@property.0" priority="4"/>
+    <priority property="//@property.5" priority="4"/>
+    <priority property="//@property.6"/>
+    <priority property="//@property.4"/>
+    <priority property="//@property.3"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="SUSPICIOUS BEHAVIOR" id="SUSPBEHAVR">
+    <context text="SUSPBEHAV">
+      <term xsi:type="diva:BooleanTerm" variable="//@context.10"/>
+    </context>
+    <priority property="//@property.0" priority="5"/>
+    <priority property="//@property.5" priority="5"/>
+    <priority property="//@property.6" priority="3"/>
+    <priority property="//@property.4" priority="4"/>
+    <priority property="//@property.3" priority="4"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="Attack" id="ATTACKR">
+    <context text="CRTYPE=ATTACK">
+      <term xsi:type="diva:EnumTerm" variable="//@context.11" value="//@context.11/@literal.1"/>
+    </context>
+    <priority property="//@property.0" priority="4"/>
+    <priority property="//@property.5" priority="5"/>
+    <priority property="//@property.6" priority="2"/>
+    <priority property="//@property.4" priority="4"/>
+    <priority property="//@property.3" priority="4"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <rule xsi:type="diva:PriorityRule" name="Victims" id="VICTIMSRULE">
+    <context text="VICTIMS">
+      <term xsi:type="diva:BooleanTerm" variable="//@context.8"/>
+    </context>
+    <priority property="//@property.0"/>
+    <priority property="//@property.5"/>
+    <priority property="//@property.6" priority="2"/>
+    <priority property="//@property.4" priority="4"/>
+    <priority property="//@property.3" priority="4"/>
+    <priority property="//@property.1"/>
+    <priority property="//@property.2"/>
+  </rule>
+  <simulation>
+    <scenario name="Scenario1">
+      <context name="BeforeCrisis" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.6"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <configuration totalScore="-82" verdict="pass">
+          <score score="8" property="//@property.0"/>
+          <score score="2" property="//@property.1"/>
+          <score score="-4" property="//@property.2"/>
+          <score score="4" property="//@property.3"/>
+          <score score="12" property="//@property.4"/>
+          <score score="8" property="//@property.5"/>
+          <score score="-112" property="//@property.6"/>
+          <variant totalScore="-26" variant="//@dimension.1/@variant.0">
+            <score property="//@property.0"/>
+            <score score="2" property="//@property.1"/>
+            <score score="-4" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score score="-32" property="//@property.6"/>
+          </variant>
+          <variant totalScore="8" variant="//@dimension.2/@variant.2">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="8" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="-64" variant="//@dimension.4/@variant.0">
+            <score score="8" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="4" property="//@property.3"/>
+            <score score="4" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-80" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text=""/>
+        <priority property="//@property.0" priority="3"/>
+        <priority property="//@property.1"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="2"/>
+        <priority property="//@property.4" priority="2"/>
+        <priority property="//@property.5" priority="2"/>
+        <priority property="//@property.6" priority="4"/>
+      </context>
+      <context name="AlarmIsRaised" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.1"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <configuration totalScore="514" verdict="pass">
+          <score score="96" property="//@property.0"/>
+          <score score="128" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="64" property="//@property.3"/>
+          <score score="240" property="//@property.4"/>
+          <score score="16" property="//@property.5"/>
+          <score score="-28" property="//@property.6"/>
+          <variant totalScore="80" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="110" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="128" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.2/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="132" variant="//@dimension.4/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="48" property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-12" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text="EMERGRK">
+          <term xsi:type="diva:VariantTerm" variant="//@dimension.1/@variant.1"/>
+        </oracle>
+        <priority property="//@property.0" priority="4"/>
+        <priority property="//@property.1" priority="5"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="4"/>
+        <priority property="//@property.4" priority="4"/>
+        <priority property="//@property.5" priority="4"/>
+        <priority property="//@property.6" priority="2"/>
+      </context>
+      <context name="CrisisConfirmed" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.1"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8" bool="true"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <configuration totalScore="594" verdict="pass">
+          <score score="144" property="//@property.0"/>
+          <score score="128" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="80" property="//@property.3"/>
+          <score score="240" property="//@property.4"/>
+          <score score="32" property="//@property.5"/>
+          <score score="-28" property="//@property.6"/>
+          <variant totalScore="80" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="110" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="128" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="32" variant="//@dimension.2/@variant.2">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="32" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="132" variant="//@dimension.4/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="48" property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-12" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="642" verdict="pass">
+          <score score="144" property="//@property.0"/>
+          <score score="128" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="80" property="//@property.3"/>
+          <score score="288" property="//@property.4"/>
+          <score score="32" property="//@property.5"/>
+          <score score="-28" property="//@property.6"/>
+          <variant totalScore="80" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="110" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="128" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.2/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="132" variant="//@dimension.4/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="48" property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-12" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="626" verdict="pass">
+          <score score="144" property="//@property.0"/>
+          <score score="128" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="80" property="//@property.3"/>
+          <score score="272" property="//@property.4"/>
+          <score score="32" property="//@property.5"/>
+          <score score="-28" property="//@property.6"/>
+          <variant totalScore="80" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="110" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="128" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.2/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="132" variant="//@dimension.4/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="48" property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-12" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text="FIREDEP and FIREPLANNER">
+          <term xsi:type="diva:AndTerm">
+            <term xsi:type="diva:VariantTerm" variant="//@dimension.0/@variant.1"/>
+            <term xsi:type="diva:VariantTerm" variant="//@dimension.3/@variant.0"/>
+          </term>
+        </oracle>
+        <priority property="//@property.0" priority="4"/>
+        <priority property="//@property.1" priority="5"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="4"/>
+        <priority property="//@property.4" priority="4"/>
+        <priority property="//@property.5" priority="4"/>
+        <priority property="//@property.6" priority="2"/>
+      </context>
+      <context name="FireSpreads" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.4"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8" bool="true"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9" bool="true"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <configuration totalScore="598" verdict="pass">
+          <score score="176" property="//@property.0"/>
+          <score score="4" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="128" property="//@property.3"/>
+          <score score="272" property="//@property.4"/>
+          <score score="40" property="//@property.5"/>
+          <score score="-20" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="-14" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="4" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="32" variant="//@dimension.2/@variant.2">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="32" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="236" variant="//@dimension.4/@variant.4">
+            <score score="80" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="80" property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-4" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="646" verdict="pass">
+          <score score="176" property="//@property.0"/>
+          <score score="4" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="128" property="//@property.3"/>
+          <score score="320" property="//@property.4"/>
+          <score score="40" property="//@property.5"/>
+          <score score="-20" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="-14" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="4" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.2/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="236" variant="//@dimension.4/@variant.4">
+            <score score="80" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="80" property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-4" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="630" verdict="pass">
+          <score score="176" property="//@property.0"/>
+          <score score="4" property="//@property.1"/>
+          <score score="-2" property="//@property.2"/>
+          <score score="128" property="//@property.3"/>
+          <score score="304" property="//@property.4"/>
+          <score score="40" property="//@property.5"/>
+          <score score="-20" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.0">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="-14" variant="//@dimension.1/@variant.1">
+            <score property="//@property.0"/>
+            <score score="4" property="//@property.1"/>
+            <score score="-2" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-16" property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.2/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.3/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="236" variant="//@dimension.4/@variant.4">
+            <score score="80" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="80" property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-4" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text=""/>
+        <priority property="//@property.0" priority="4"/>
+        <priority property="//@property.1"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="4"/>
+        <priority property="//@property.4" priority="4"/>
+        <priority property="//@property.5" priority="3"/>
+        <priority property="//@property.6" priority="2"/>
+      </context>
+      <context name="VictimsEvacuated" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.3"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9" bool="true"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <configuration totalScore="382" verdict="pass">
+          <score score="112" property="//@property.0"/>
+          <score score="2" property="//@property.1"/>
+          <score score="-4" property="//@property.2"/>
+          <score score="96" property="//@property.3"/>
+          <score score="144" property="//@property.4"/>
+          <score score="48" property="//@property.5"/>
+          <score score="-16" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="6" variant="//@dimension.1/@variant.0">
+            <score property="//@property.0"/>
+            <score score="2" property="//@property.1"/>
+            <score score="-4" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+          <variant totalScore="32" variant="//@dimension.2/@variant.2">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="32" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="184" variant="//@dimension.4/@variant.3">
+            <score score="64" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="64" property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="430" verdict="pass">
+          <score score="112" property="//@property.0"/>
+          <score score="2" property="//@property.1"/>
+          <score score="-4" property="//@property.2"/>
+          <score score="96" property="//@property.3"/>
+          <score score="192" property="//@property.4"/>
+          <score score="48" property="//@property.5"/>
+          <score score="-16" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="6" variant="//@dimension.1/@variant.0">
+            <score property="//@property.0"/>
+            <score score="2" property="//@property.1"/>
+            <score score="-4" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+          <variant totalScore="80" variant="//@dimension.2/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="80" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="184" variant="//@dimension.4/@variant.3">
+            <score score="64" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="64" property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <configuration totalScore="414" verdict="pass">
+          <score score="112" property="//@property.0"/>
+          <score score="2" property="//@property.1"/>
+          <score score="-4" property="//@property.2"/>
+          <score score="96" property="//@property.3"/>
+          <score score="176" property="//@property.4"/>
+          <score score="48" property="//@property.5"/>
+          <score score="-16" property="//@property.6"/>
+          <variant totalScore="72" variant="//@dimension.0/@variant.1">
+            <score score="48" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="40" variant="//@dimension.0/@variant.3">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="16" property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="24" property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="6" variant="//@dimension.1/@variant.0">
+            <score property="//@property.0"/>
+            <score score="2" property="//@property.1"/>
+            <score score="-4" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="16" property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+          <variant totalScore="64" variant="//@dimension.2/@variant.1">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="48" variant="//@dimension.3/@variant.0">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="48" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="184" variant="//@dimension.4/@variant.3">
+            <score score="64" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="64" property="//@property.3"/>
+            <score score="64" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-8" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text=""/>
+        <priority property="//@property.0" priority="4"/>
+        <priority property="//@property.1"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="4"/>
+        <priority property="//@property.4" priority="4"/>
+        <priority property="//@property.5" priority="3"/>
+        <priority property="//@property.6" priority="2"/>
+      </context>
+      <context name="CrisisClosed" verdict="pass">
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.0" literal="//@context.0/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.1"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.2" literal="//@context.2/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.3"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.4" literal="//@context.4/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.5" bool="true"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.6" literal="//@context.6/@literal.2"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.7"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.8"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.9"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.10"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.11" literal="//@context.11/@literal.6"/>
+        <variable xsi:type="diva:EnumVariableValue" variable="//@context.12" literal="//@context.12/@literal.0"/>
+        <variable xsi:type="diva:BoolVariableValue" variable="//@context.13"/>
+        <configuration totalScore="-82" verdict="pass">
+          <score score="8" property="//@property.0"/>
+          <score score="2" property="//@property.1"/>
+          <score score="-4" property="//@property.2"/>
+          <score score="4" property="//@property.3"/>
+          <score score="12" property="//@property.4"/>
+          <score score="8" property="//@property.5"/>
+          <score score="-112" property="//@property.6"/>
+          <variant totalScore="-26" variant="//@dimension.1/@variant.0">
+            <score property="//@property.0"/>
+            <score score="2" property="//@property.1"/>
+            <score score="-4" property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score property="//@property.4"/>
+            <score score="8" property="//@property.5"/>
+            <score score="-32" property="//@property.6"/>
+          </variant>
+          <variant totalScore="8" variant="//@dimension.2/@variant.2">
+            <score property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score property="//@property.3"/>
+            <score score="8" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score property="//@property.6"/>
+          </variant>
+          <variant totalScore="-64" variant="//@dimension.4/@variant.0">
+            <score score="8" property="//@property.0"/>
+            <score property="//@property.1"/>
+            <score property="//@property.2"/>
+            <score score="4" property="//@property.3"/>
+            <score score="4" property="//@property.4"/>
+            <score property="//@property.5"/>
+            <score score="-80" property="//@property.6"/>
+          </variant>
+        </configuration>
+        <oracle text="not FIREPLANNER">
+          <term xsi:type="diva:NotTerm">
+            <term xsi:type="diva:VariantTerm" variant="//@dimension.3/@variant.0"/>
+          </term>
+        </oracle>
+        <priority property="//@property.0" priority="3"/>
+        <priority property="//@property.1"/>
+        <priority property="//@property.2"/>
+        <priority property="//@property.3" priority="2"/>
+        <priority property="//@property.4" priority="2"/>
+        <priority property="//@property.5" priority="2"/>
+        <priority property="//@property.6" priority="4"/>
+      </context>
+    </scenario>
+  </simulation>
+</diva:VariabilityModel>

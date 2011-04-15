@@ -116,7 +116,11 @@ public class DiVATraceArtifactsAction implements IEditorActionDelegate {
 
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-		shell = targetEditor.getSite().getShell();
+		try{
+			shell = targetEditor.getSite().getShell();
+			}catch(NullPointerException e){
+				System.out.println("NullPointerException: uk.ulancs.diva.traceartifacts.pop.actions.DiVATraceArtifactsAction.setActiveEditor");
+			}
 		
 	}
 

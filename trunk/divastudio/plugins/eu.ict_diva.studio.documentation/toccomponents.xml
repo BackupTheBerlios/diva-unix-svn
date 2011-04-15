@@ -2,7 +2,22 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="DiVA components" link_to="toc.xml#components"> 
-	<topic label="Main Topic"  href="html/samples/maintopic.html"> 
-		<topic label="Sub Topic" href="html/samples/subtopic.html" /> 
+	
+	<topic label="Requirements Engineering Tools"  href="html/components/RequirementEngineeringTool/guide/diva_re.html">
+		<topic label="Online documentation" href="http://sites.google.com/site/divawebsite/divastudio/requirements-analysis" />  
 	</topic>
+	<topic label="Adaptation Modelling Toolkit"  href="html/components/adaptation_modelling_toolkit.html">
+		<topic label="Online documentation" href="http://sites.google.com/site/divawebsite/divastudio/diva-adaptation-modelling-toolkit" />  
+	</topic>
+	<!-- <topic label="Main Topic"  href="html/components/maintopic.html"> 
+		<topic label="Sub Topic" href="html/components/subtopic.html" /> 
+	</topic> -->
+	
+	<topic label="Runtime Architecture Definition"  href="html/components/RuntimeArchitectureDefinition.html">
+		<topic label="Online documentation" href="http://sites.google.com/site/divawebsite/divastudio/diva-architecture-modelling-toolkit" />  
+	</topic>
+ <topic href="html/components/RuntimeDeployment.html" label="Deployment and execution">
+    <topic label="Online Documentation" href="http://sites.google.com/site/divawebsite/divastudio/diva-causal-connection">
+    </topic>
+ </topic>
 </toc>

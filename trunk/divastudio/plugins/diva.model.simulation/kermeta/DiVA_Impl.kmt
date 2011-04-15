@@ -1012,7 +1012,7 @@ aspect class Context {
 		result := Set<Configuration>.new
 		var alloy_system : String init DiVA2Alloy.new.generate(model)
 		var alloy_context : String init alloy_contextExpression(model)
-		stdio.writeln(alloy_context)
+		//stdio.writeln(alloy_context)
 		var alloy_result : String
     	alloy_result ?= extern diva::alloy::AlloyWrapper.KComputeConfigurations(alloy_system, alloy_context)
     	var nc : Configuration

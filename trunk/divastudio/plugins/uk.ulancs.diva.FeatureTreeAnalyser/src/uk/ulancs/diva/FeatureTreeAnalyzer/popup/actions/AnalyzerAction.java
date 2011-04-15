@@ -8,20 +8,21 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
 import uk.ulancs.diva.FeatureTreeAnalyzer.Compare.Compare;
 
 import ca.uwaterloo.gp.fmp.util.FmpExternalLoader;
 
-public class AnalyzerAction implements IObjectActionDelegate {
+public class AnalyzerAction implements IObjectActionDelegate, IViewActionDelegate {
 
 	private Shell shell;
 	private Vector<IFile> Trees;
@@ -111,12 +112,22 @@ public class AnalyzerAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		try{
 		Trees.clear();
 		Iterator<IFile> it= ((StructuredSelection) selection).iterator();
 		
 		while(it.hasNext()){
 			Trees.add(it.next());
 		}
+		}catch(Exception e){
+			
+		}
+	}
+
+	
+	public void init(IViewPart view) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

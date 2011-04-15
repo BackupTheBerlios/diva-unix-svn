@@ -115,8 +115,11 @@ public class FMPTraceArtifactsAction implements IEditorActionDelegate {
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		try{
 		shell = targetEditor.getSite().getShell();
-		
+		}catch(NullPointerException e){
+			System.out.println("NullPointerException: uk.ulancs.diva.traceartifacts.pop.actions.FMPTraceArtifactsAction.setActiveEditor");
+		}
 	}
 
 }

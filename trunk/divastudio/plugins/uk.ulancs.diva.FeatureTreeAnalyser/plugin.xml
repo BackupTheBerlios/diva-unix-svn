@@ -25,5 +25,26 @@
          </action>
       </objectContribution>
    </extension>
+   
+   <extension point="org.eclipse.ui.viewActions"> 
+<viewContribution 
+      id="org.eclipse.ui.articles.action.contribution.view" 
+   targetID="org.eclipse.ui.views.ResourceNavigator">
+   <action
+         class="uk.ulancs.diva.FeatureTreeAnalyzer.popup.actions.AnalyzerAction"
+         disabledIcon="icons/grey_dot.gif"
+         enablesFor="2"
+         icon="icons/blue_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.view.action2"
+         label="Similarity Analysis"
+         toolbarPath="group1"
+         tooltip="Computes the similarity between two feature models.">
+      <selection
+            class="org.eclipse.core.resources.IFile"
+            name="*.fmp">
+         </selection>
+      </action> 
+   </viewContribution> 
+</extension>
 
 </plugin>

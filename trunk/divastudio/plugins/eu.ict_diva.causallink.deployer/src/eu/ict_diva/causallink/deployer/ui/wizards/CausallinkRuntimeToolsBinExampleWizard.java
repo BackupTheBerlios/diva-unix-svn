@@ -32,6 +32,7 @@ public class CausallinkRuntimeToolsBinExampleWizard extends AbstractExampleWizar
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.osgi.component.framework.zip", "eu.ict_diva.osgi.component.framework"));
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.runtime.causallink.osgi.gui.zip", "eu.ict_diva.runtime.causallink.osgi.gui"));
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.runtime.causallink.osgi.zip", "eu.ict_diva.runtime.causallink.osgi"));
+		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/org.kermeta.smartadapters.drools5.diva.zip", "org.kermeta.smartadapters.drools5.diva"));
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.runtime.causallink.zip", "eu.ict_diva.runtime.causallink"));
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.runtime.checker.zip", "eu.ict_diva.runtime.checker"));
 		projects.add(new ProjectDescriptor("eu.ict_diva.causallink.deployer", "zips/eu.ict_diva.runtime.osgi.bootstrap.zip", "eu.ict_diva.runtime.osgi.bootstrap"));

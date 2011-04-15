@@ -18,6 +18,7 @@
            nameFilter="*.diva"
            objectClass="org.eclipse.core.resources.IFile">
         <menu
+              icon="icons/DivaModelFile.gif"
               id="diva.ui.menu"
               label="DiVA"
               path="additions">

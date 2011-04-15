@@ -10,7 +10,8 @@
                class="uk.ulancs.diva.traceartifacts.pop.actions.DiVATraceArtifactsAction"
                id="uk.ulancs.diva.TraceArtifacts.action4"
                label="Find in FMP Model"
-               menubarPath="additions">
+               menubarPath="additions"
+               tooltip="Finds the selected element in the related feature model.">
          </action>
       </viewerContribution>
    </extension>
@@ -23,9 +24,42 @@
                class="uk.ulancs.diva.traceartifacts.pop.actions.FMPTraceArtifactsAction"
                id="uk.ulancs.diva.TraceArtifacts.action5"
                label="Find in DiVA Model"
-               menubarPath="additions">
+               menubarPath="additions"
+               tooltip="Finds the selected element in the related DiVA model.">
          </action>
       </viewerContribution>
    </extension>
+   <extension point="org.eclipse.ui.editorActions"> 
+   <editorContribution 
+      id="org.eclipse.ui.articles.action.contribution.editor" 
+   targetID="diva.presentation.DivaEditorID">
+   <action
+         class="uk.ulancs.diva.traceartifacts.pop.actions.DiVATraceArtifactsAction"
+         disabledIcon="icons/grey_dot.gif"
+         icon="icons/red_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.editor.action1"
+         label="Find in FMP Model"
+         toolbarPath="Normal/additions"
+         tooltip="Finds the selected element in the related feature model."> 
+      </action> 
+   </editorContribution> 
+   </extension>
+   
+   <extension point="org.eclipse.ui.editorActions"> 
+   <editorContribution 
+      id="org.eclipse.ui.articles.action.contribution.editor" 
+   targetID="ca.uwaterloo.gp.fmp.FmpEditor">
+   <action
+         class="uk.ulancs.diva.traceartifacts.pop.actions.FMPTraceArtifactsAction"
+         disabledIcon="icons/grey_dot.gif"
+         icon="icons/red_dot.gif"
+         id="org.eclipse.ui.articles.action.contribution.editor.action2"
+         label="Find in DiVA Model"
+         toolbarPath="Normal/additions"
+         tooltip="Finds the selected element in the related DiVA model."> 
+      </action> 
+   </editorContribution> 
+   </extension>
+   
 
 </plugin>

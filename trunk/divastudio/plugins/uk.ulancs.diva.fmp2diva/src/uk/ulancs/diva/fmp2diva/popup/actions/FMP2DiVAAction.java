@@ -13,7 +13,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -24,8 +26,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 import uk.ulancs.diva.fmp2diva.MyExpressionValidator;
 import uk.ulancs.diva.metamodel.Dimension;
@@ -37,6 +43,7 @@ import bin.ca.uwaterloo.gp.fmp.util.FmpResourceImpl;
 
 import bin.ca.uwaterloo.gp.fmp.Project;
 import ca.uwaterloo.gp.fmp.Feature;
+import ca.uwaterloo.gp.fmp.FeatureGroup;
 import ca.uwaterloo.gp.fmp.FmpFactory;
 import ca.uwaterloo.gp.fmp.Node;
 import ca.uwaterloo.gp.fmp.TypedValue;
@@ -49,6 +56,7 @@ import ca.uwaterloo.gp.fmp.constraints.expression.ui.ExpressionValidator;
 import ca.uwaterloo.gp.fmp.impl.ConstraintImpl;
 import ca.uwaterloo.gp.fmp.impl.FeatureImpl;
 import ca.uwaterloo.gp.fmp.impl.NodeImpl;
+import ca.uwaterloo.gp.fmp.presentation.FmpEditor;
 import ca.uwaterloo.gp.fmp.system.IdTable;
 import ca.uwaterloo.gp.fmp.system.NodeIdDictionary;
 import ca.uwaterloo.gp.fmp.system.RoleQuery;
@@ -61,7 +69,7 @@ import diva.VariantExpression;
 
 import bin.ca.uwaterloo.gp.fmp.util.FmpExternalLoader;
 
-public class FMP2DiVAAction implements IObjectActionDelegate {
+public class FMP2DiVAAction implements IObjectActionDelegate, IViewActionDelegate {
 
 	private Shell shell;
 	
@@ -342,18 +350,46 @@ Feature properties= n.getProperties();
 		Feature properties= n.getProperties();
 		
 		if(properties!=null){
+			if(properties.getChildren().get(0) instanceof Feature){
 		Object property= ((Feature)properties.getChildren().get(0)).eAdapters().get(0).getTarget();
 		if(property instanceof TypedValue){
 			return ((TypedValue)property).getStringValue();
 		}
+			}
 		}
 		return null;
 	}
 	
-	public boolean isNodeAVariant(Node n){
+	public int getUpper(Node n){
+		Feature properties= n.getProperties();
+		
+		if(properties!=null){
+			if(properties.getChildren().size()==3)
+				return ((Feature)properties.getChildren().get(2)).getTypedValue().getIntegerValue().intValue();
+			else
+			return ((Feature)properties.getChildren().get(5)).getTypedValue().getIntegerValue().intValue();
+
+		}
+		return 1;
+	}
+	
+	public int getLower(Node n){
+		Feature properties= n.getProperties();
+		
+		if(properties!=null){
+			if(properties.getChildren().size()==3)
+				return ((Feature)properties.getChildren().get(1)).getTypedValue().getIntegerValue().intValue();
+			else
+			return ((Feature)properties.getChildren().get(4)).getTypedValue().getIntegerValue().intValue();
+
+		}
+		return 1;
+	}
+	
+	public boolean isNodeAVariant(Node n,boolean isGroup){
 		int min= ((Feature)n.getProperties().getChildren().get(4)).getTypedValue().getIntegerValue().intValue();
 
-		if(n.getChildren().isEmpty()&&min==0){
+		if(n.getChildren().isEmpty()&&(min==0||isGroup)){
 			return true;
 		}
 		else
@@ -364,7 +400,21 @@ Feature properties= n.getProperties();
 		EList list= n.getChildren();
 		for(Iterator it= list.iterator();it.hasNext();){
 			Object child= it.next();
-			if(child instanceof Node){
+			if(child instanceof FeatureGroup){
+				Node node= (Node)child;
+				EList list2= node.getChildren();
+				for(Iterator it2= list2.iterator();it2.hasNext();){
+					Object child2= it2.next();
+					if(child2 instanceof Node){
+						{
+							Node node2= (Node)child2;
+							if(node2.getChildren().isEmpty())
+								return true;
+						}
+					}
+				}
+			}
+			else{
 				Node node= (Node)child;
 				if(node.getChildren().isEmpty())
 					return true;
@@ -382,12 +432,12 @@ Feature properties= n.getProperties();
 				String nodeName= getName(node);
 				String nodeType= getType(node);
 
-				if(nodeName!=null&&!nodeName.equals("Adaptation")){
+				if(nodeName!=null&&!nodeName.equals("Adaptation")&&!nodeName.equals("Device")){
 					Node goal= (Node)node.getChildren().get(0);
 					String goalName= getName(goal);
 					System.out.println("Goal name: "+goalName);
 					int value =1;
-					if(goalName.equals("network-usage"))
+					if(goalName.equalsIgnoreCase("network-usage")||goalName.equalsIgnoreCase("cost"))
 						value=0;
 					Property property= new Property(goalName,value,createID(goalName));
 					properties.add(property);
@@ -398,13 +448,17 @@ Feature properties= n.getProperties();
 	}
 		
 	
-	public void FMPIterator(EList l,String owner,Node root){
+	public void FMPIterator(EList l,String owner,Node root,boolean isGroup){
 		for(Iterator it= l.iterator();it.hasNext();){
 			Object child= it.next();
 			if(child instanceof Node){
 			Node node= (Node)child;
+			
 			String nodeName= getName(node);
 			String nodeType= getType(node);
+			if(node instanceof Feature){
+			int upper= getUpper(node);
+			int lower= getLower(node);
 
 			if(nodeName!=null){
 			properties.put(nodeName,getProperties(node));
@@ -421,16 +475,21 @@ Feature properties= n.getProperties();
 				dimensions.add(dimension);
 			}
 			
-			if(!nodeType.startsWith("group")&&isNodeAVariant(node)){
-				Variant variant= new Variant(nodeName,owner,createID(nodeName),nodeType);
+			if(!nodeType.startsWith("group")&&isNodeAVariant(node,isGroup)){
+				Variant variant= new Variant(nodeName,owner,createID(nodeName),nodeType,upper,lower);
 				variants.add(variant);
 			}
 			if(node!=null){
-				FMPIterator(node.getChildren(),nodeName,root);
+				FMPIterator(node.getChildren(),nodeName,root,false);
 			}
 			}else{
 				System.out.println("processing soft goals");
 				processSoftGoals(node.getChildren(),nodeName,root);
+			}
+			}else{
+				if(node!=null){
+					FMPIterator(node.getChildren(),owner,root,true);
+				}
 			}
 			}
 			
@@ -486,6 +545,10 @@ Feature properties= n.getProperties();
 	 */
 	public void run(IAction action) {
 		
+		
+		
+
+		
 		variants= new ArrayList<Variant>();
 		dimensions= new ArrayList<Dimension>();
 		properties= new Hashtable<String,List<Property>>();
@@ -496,12 +559,12 @@ Feature properties= n.getProperties();
 		
 		FmpResourceImpl fmpresource= (FmpResourceImpl)fmp.getResources().get(0);
 		Project project= (Project) fmpresource.getAllContents().next();
-		
+	
 		model= project.getModel();		
 		
 		NodeIdDictionary.INSTANCE.visit(null, model);
 		Node node= model.getDescribedNode();
-		FMPIterator(model.getChildren(),model.getName(),model);
+		FMPIterator(model.getChildren(),model.getName(),model,false);
 		
 		
 		
@@ -550,7 +613,8 @@ Feature properties= n.getProperties();
         			 variant.setDependency(DivaFactory.eINSTANCE.createVariantExpression());
         			 variant.setRequired(DivaFactory.eINSTANCE.createContextExpression());
         			 
-        			 
+        			 divadimension.setUpper(v.getUpper());
+        			 divadimension.setLower(v.getLower());
         			 
         			 divadimension.getVariant().add(addConstraints(variant,v.getName()));
         		 }
@@ -558,8 +622,8 @@ Feature properties= n.getProperties();
         	 
         	 divadimension.setName(dimension.getName());
         	 divadimension.setId(dimension.getId());
-         
-        	 divamodel.getDimension().add(divadimension);
+        	 if(!divadimension.getVariant().isEmpty())
+        		 divamodel.getDimension().add(divadimension);
         	
          }
          
@@ -641,12 +705,21 @@ Feature properties= n.getProperties();
 	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		try{
 		Iterator it= ((StructuredSelection) selection).iterator();
 		
 		while(it.hasNext()){
 			fmpFile= (IFile)it.next();
 			
 		}
+		}catch(Exception e){
+			
+		}
+	}
+
+	public void init(IViewPart view) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

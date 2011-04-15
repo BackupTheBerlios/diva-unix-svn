@@ -10,13 +10,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
 import uk.ulancs.diva.FeatureTreeNormaliser.Normaliser.Normaliser;
 
 import ca.uwaterloo.gp.fmp.util.FmpExternalLoader;
 
-public class NormaliserAction implements IObjectActionDelegate {
+public class NormaliserAction implements IObjectActionDelegate, IViewActionDelegate {
 
 	private Shell shell;
 	private Vector<IFile> Trees;
@@ -74,11 +76,22 @@ public class NormaliserAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		try{
+		Trees = new Vector<IFile>();
 		Iterator<IFile> it= ((StructuredSelection) selection).iterator();
 		
 		while(it.hasNext()){
 			Trees.add(it.next());
 		}
+		}catch(ClassCastException e){
+			System.out.println("Cast exception: uk.ulancs.diva.FeatureTreeNormaliser.popup.actions.NormaliserAction.selectionChanged");
+		}
+	}
+
+
+	public void init(IViewPart view) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

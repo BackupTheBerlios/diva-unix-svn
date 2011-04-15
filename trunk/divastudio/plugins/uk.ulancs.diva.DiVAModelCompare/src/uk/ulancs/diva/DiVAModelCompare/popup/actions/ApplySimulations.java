@@ -34,13 +34,17 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+
 
 import ca.uwaterloo.gp.fmp.Feature;
 import ca.uwaterloo.gp.fmp.Node;
@@ -60,16 +64,15 @@ import diva.SimulationModel;
 import diva.VariabilityModel;
 import diva.provider.DiVA_visitorEditPlugin;
 
-public class ApplySimulations implements IObjectActionDelegate {
+public class ApplySimulations implements IObjectActionDelegate, IViewActionDelegate {
 	
-	private Shell shell;
+	private Shell shell=null;
 	private IFile file;
 	public VariabilityModel diva;
 
 	
 	public void setActivePart(IAction arg0, IWorkbenchPart targetPart) {
-		shell = targetPart.getSite().getShell();
-		
+			shell = targetPart.getSite().getShell();
 	}
 	
 	
@@ -105,7 +108,7 @@ public class ApplySimulations implements IObjectActionDelegate {
 			dialog.setTitle("Configuration Selection");
 			dialog.setMessage("Select a configuration from the tree:");
 
-		    dialog.setInput("/Users/greenwop");
+		    dialog.setInput(System.getProperty("user.home"));
 
 			dialog.open();
 			
@@ -138,12 +141,16 @@ public class ApplySimulations implements IObjectActionDelegate {
 							for(Iterator<ConfigVariant> it2= config.getVariant().iterator();it2.hasNext();){
 								ConfigVariant variant= it2.next();
 								if(nodeName.equalsIgnoreCase(variant.getVariant().getName())){
-									requirements.add(getDescription(node));
+									String description= getDescription(node);
+									if(!requirements.contains(description.trim()))
+										requirements.add(getDescription(node).trim());
 								}
 							}
 							if (node.getChildren().size() > 0) {
-								requirements.addAll(getRequirementsText(node.getChildren(),nodeName,root, config));
-								
+								for(String description : getRequirementsText(node.getChildren(),nodeName,root, config)){
+									if(!requirements.contains(description.trim()))
+										requirements.add(description.trim());
+								}								
 							}
 						}
 					}
@@ -185,9 +192,13 @@ public class ApplySimulations implements IObjectActionDelegate {
   	
   	
   	public void saveRequirements(List<String> requirements){
-  		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
   		
-  		String filename= dialog.open();
+  		FileDialog dialog = new FileDialog(new Shell(Display.getCurrent()), SWT.SAVE);
+  		
+  		String filename=dialog.open();
+    	
+  
+  		
   		if(filename!=null){
   			
   			if(!filename.endsWith(".txt")){
@@ -253,7 +264,12 @@ public class ApplySimulations implements IObjectActionDelegate {
 
 
 	public void selectionChanged(IAction arg0, ISelection selection) {
+		try{
 		file= (IFile) (((StructuredSelection) selection)).getFirstElement();
+		
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	class FileTreeContentProvider implements ITreeContentProvider {
@@ -485,6 +501,11 @@ public class ApplySimulations implements IObjectActionDelegate {
 		  public void removeListener(ILabelProviderListener arg0) {
 		    listeners.remove(arg0);
 		  }
+		}
+
+		public void init(IViewPart view) {
+			// TODO Auto-generated method stub
+			
 		}
 
 }
